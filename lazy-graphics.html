@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lazy Graphics</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2020-10-06" />
+    <link href="template/libs/remark-css/default.css" rel="stylesheet" />
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Handlee&family=Montserrat:ital,wght@0,400;0,500;1,400;1,500&family=Roboto:ital,wght@0,500;1,500&display=swap');
+    </style>
+    <link rel="stylesheet" href="template/unl.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lazy Graphics
+### October 06, 2020
+
+---
+
+
+
+
+class: inverse
+# Questions To Start With
+
+.middle.center.cerulean.emph.huge[
+
+What do I want to show?
+
+What features of my data are important?
+
+What is my audience?
+
+]
+
+---
+
+## What do I want to show?
+
+
+![Gestalt Hierarchy](figure/gestalt.jpg)
+
+---
+
+## What do I want to show?
+
+
+
+Proximity | Proximity + Similarity
+-------- | -------
+![Proximity based grouping](deps/lazy-graphics/prox-sim-1.png) | ![Similarity and proximity based grouping](deps/lazy-graphics/prox-sim-2.png)
+
+---
+
+## What do I want to show?
+
+&lt;img src="deps/lazy-graphics/unnamed-chunk-1-1.png" width="49%" /&gt;&lt;img src="deps/lazy-graphics/unnamed-chunk-1-2.png" width="49%" /&gt;
+
+- The arrangement of graphical elements makes some comparisons less mental work
+
+- Your graph should highlight the comparisons you think are most important
+
+---
+
+## What features are important?
+
+.center[
+&lt;img  src="figure/elementary-perceptual-tasks.png" width="60%" alt="Ranking of elementary perceptual tasks"/&gt;
+]
+
+.bottom[From Cleveland &amp; McGill (1986)]
+
+
+
+---
+## What features are important?
+
+.cerulean.emph[Easiest to perceive accurately]
+
+1. Position (common scale)
+2. Position (non-aligned scale)
+3. Length, Direction, Angle, Slope
+4. Area
+5. Volume, Density, Curvature
+6. Shading, Color saturation, Color Hue
+
+.cerulean.emph[Hardest to perceive accurately]
+
+
+Important features should be shown using more accurate mappings
+
+---
+## What features are important?
+
+&lt;img src="deps/lazy-graphics/unnamed-chunk-2-1.png" width="33%" /&gt;&lt;img src="deps/lazy-graphics/unnamed-chunk-2-2.png" width="33%" /&gt;&lt;img src="deps/lazy-graphics/unnamed-chunk-2-3.png" width="33%" /&gt;
+
+- Using color saturation to show survival is harder to read accurately
+
+- Using position on an aligned scale to show survival by class status is much easier to read
+
+- If we want to show survival rates by class, we could use stacked bars (but we lose # individuals)
+
+---
+
+## What is my audience?
+.toprightfig[![Colorblindness test](https://upload.wikimedia.org/wikipedia/commons/e/e0/Ishihara_9.png)]
+- 10% of men and 0.2% of women are colorblind
+
+Ways to work around colorblindness:
+
+- Use redundant encoding (e.g. shape + color)
+
+- Use colorblind safe color schemes
+  - Totally safe: 
+      - orange and purple
+      - black-and-white copier friendly
+
+  - Maybe safe:
+      - [ColorBrewer](https://colorbrewer2.org/) color schemes
+      - `dichromat` package color schemes
+
+  - General rule
+      - use light/dark perception to your advantage    
+      (vary saturation and hue)
+
+
+---
+## Perceptual quirks
+
+Keep in mind that we don't always perceive things accurately
+
+Color perception | Length perception
+----- | -----
+![Color constancy illusion](figure/CheckerShadow.png) | ![Sine illusion](figure/sine-illusion.png)
+
+- Context matters!
+- Induced context (the sine curve looks like a ribbon) can make it difficult to see that the lines are the same length
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
