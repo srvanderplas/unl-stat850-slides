@@ -16,7 +16,13 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4, out.width = "75%", message = F, warning = F, dpi = 300)
+knitr::opts_knit$set(
+  base.dir = "deps/grammar-of-graphics"
+)
+knitr::opts_chunk$set(
+  fig.width = 6, fig.height = 4, 
+  out.width = "75%", 
+  message = F, warning = F, dpi = 300)
 ```
 
 ## Setting up
@@ -200,5 +206,5 @@ ggplot(data = penguins) +
 ---
 ## Finding your Geom
 
-[<img alt="R graph catalog" src="R-graph-catalog.png" width="49%"/>](https://shiny.srvanderplas.com/r-graph-catalog/#)
-[<img alt="ggplot2 cheat sheet" src="ggplot2-cheatsheet.png" width="49%"/>](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+[<img alt="R graph catalog" src="figure/R-graph-catalog.png" width="49%"/>](https://shiny.srvanderplas.com/r-graph-catalog/#)
+[<img alt="ggplot2 cheat sheet" src="figure/ggplot2-cheatsheet.png" width="49%"/>](https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
