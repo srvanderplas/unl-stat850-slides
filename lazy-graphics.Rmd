@@ -24,6 +24,17 @@ knitr::opts_chunk$set(
 library(tidyverse)
 ```
 
+## Graphs: External Cognition
+
+- Making physical comparisons is easier than mentally rearranging data
+- We can see things in a graph we miss in a table or summary statistics
+
+.center[
+<img alt="The datasaurus dozen" src="https://d2f99xq7vri1nk.cloudfront.net/AllDinosGrey_1.png" width = "80%"/>
+]
+
+.bottom[[The Datasaurus Dozen](https://www.autodesk.com/research/publications/same-stats-different-graphs), Justin Matejka & George Fitzmaurice]
+---
 class: inverse
 # Questions To Start With
 
@@ -71,6 +82,44 @@ qplot(data = data, x = x, y = y, color = group) + scale_color_brewer(palette = "
 Proximity | Proximity + Similarity
 -------- | -------
 ![Proximity based grouping](deps/lazy-graphics/prox-sim-1.png) | ![Similarity and proximity based grouping](deps/lazy-graphics/prox-sim-2.png)
+
+The aesthetic mappings you use highlight features of your data set
+
+---
+
+.center[
+<img src="figure/set-48-k-5-sdline-0.45-sdgroup-0.25-TREND.png" width = "60%"/>
+]
+
+
+---
+
+.center[
+<img src="figure/set-48-k-5-sdline-0.45-sdgroup-0.25-COLOR.png" width = "60%"/>
+]
+
+---
+
+## What do I want to show?
+
+.pull-left[
+![](figure/set-48-k-5-sdline-0.45-sdgroup-0.25-COLOR.png)
+
+5 | 12 | 18 | N
+- | -- | -- | --
+28.1% | 9.4% | 62.3% | 31
+
+]
+.pull-right[
+![](figure/set-48-k-5-sdline-0.45-sdgroup-0.25-TREND.png)
+
+
+5 | 12 | 18 | N
+- | -- | -- | --
+17.4% | 52.2% | 30.3% | 22
+]
+
+.huge.cerulean.emph.bottom-highlight[Aesthetic choices matter!]
 
 ---
 

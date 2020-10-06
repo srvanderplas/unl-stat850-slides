@@ -180,3 +180,9 @@ div.remark-slide {
   font-size: 70%;
   /*width: 100%;*/
 }
+.bottom-highlight {
+  left: 12%;
+  position: absolute;
+  bottom: 5px;
+  /*width: 100%;*/
+}
