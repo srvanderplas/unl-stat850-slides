@@ -16,10 +16,8 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_knit$set(
-  base.dir = "deps/grammar-of-graphics"
-)
 knitr::opts_chunk$set(
+  fig.path = "deps/grammar-of-graphics/",
   fig.width = 6, fig.height = 4, 
   out.width = "75%", 
   message = F, warning = F, dpi = 300)
