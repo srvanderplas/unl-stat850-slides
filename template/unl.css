@@ -172,6 +172,13 @@ div.remark-slide {
   height:auto;
   width: auto;
 }
+.bottomrightfig{
+  position:absolute;
+  bottom:0;
+  right: 0;
+  max-height: 100%;
+  max-width: 50%;
+}
 
 .bottom {
   left: 12%;

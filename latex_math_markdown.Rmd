@@ -1,0 +1,240 @@
+---
+title: "LaTeX, Equations, and Markdown"
+subtitle: "An Introduction to Documents with Markup"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  xaringan::moon_reader:
+    css: ["default", "template/unl.css"]
+    lib_dir: template/libs
+    includes:
+      in_header: template/header.html
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.path = "deps/latex/",
+  fig.width = 6, fig.height = 4, 
+  out.width = "75%", 
+  message = F, warning = F, dpi = 300)
+```
+
+## Contents
+
+(in chronological order)
+
+- [LaTeX](#latex)
+    - [Sweave/knitr](#knitr)
+    - [Math mode](#mathmode)
+
+- [Rmarkdown](#rmarkdown)
+
+---
+name: latex
+## Document Preparation System 
+
+.pull-left[
+LaTeX is a **document preparation system**
+
+Think of it as the digital version of a printing press.
+
+You will use **tags** to control the formatting of your document, and then compile it to PDF. 
+- `\emph{}` for *italic* text
+- `\textbf{}` for **bold** text
+- `{\HUGE }`, `{\footnotesize }`
+
+
+The LaTeX system lays out your document according to a set of rules for spacing, margins, figure captions, cross-references, ...
+].pull-right[
+![Printing press](https://upload.wikimedia.org/wikipedia/commons/c/c3/PrintMus_038.jpg)
+]
+
+---
+class: center,middle
+
+> Let us change our traditional attitude to the construction of programs: Instead of imagining that our main task is to instruct a computer what to do, let us concentrate rather on explaining to humans what we want the computer to do.
+
+> — Donald E. Knuth, Literate Programming, 1984
+
+---
+
+## LaTeX Editors
+
+While a .tex file is just a text file, it can help to use a dedicated editor that will compile your document for you.
+
+Some options:
+
+- Overleaf.com (real-time compilation, collaboration)
+- TeXWorks
+- LyX - What-you-see-is-what-you-get (WYSIWYG) LaTeX editor
+- RStudio
+
+Of these, Lyx and Rstudio support integrating your code with your document using knitr/Sweave.
+
+[LaTeX cheatsheet](https://wch.github.io/latexsheet/latexsheet.pdf)
+
+[Learn LaTeX in 30 minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes)
+
+---
+## Basic LaTeX
+.pull-left[
+```
+\documentclass{article}     % 1
+\usepackage[utf8]{inputenc} % 2
+
+\usepackage{natbib}         % 3 
+\usepackage{graphicx}       % 4
+
+\title{Demo}                % 5
+\author{Susan VanderPlas}
+\date{October 2020}
+
+\begin{document}            % 6
+
+\maketitle                  % 7
+
+\section{Introduction}      % 8
+
+\section{Conclusion}
+
+\bibliographystyle{plain}   % 9
+\bibliography{references}
+\end{document}
+```
+
+[Basic LaTeX document](https://www.overleaf.com/read/prfdcbtmfqjh)
+].pull-right[
+
+
+1. type of document (article)
+2. allow UTF-8 characters
+
+3. use a bibliography
+4. allow pictures
+
+5. Document header information
+
+6. Actual document content
+7. Create document title/header
+8. Create introduction section
+
+9. Create the bibliography
+
+
+[Overleaf Gallery of possibilities](https://www.overleaf.com/gallery)
+]
+???
+
+[Link to edit document](https://www.overleaf.com/2258276697wbnwfjhgdbvh)
+
+---
+class: inverse
+## Try it out!
+
+Minimal LaTeX document:
+```
+\documentclass{article}
+\begin{document}
+Hello \LaTeX!
+\end{document}
+```
+
+1. [Add an image](https://www.overleaf.com/learn/latex/Inserting_Images)
+
+2. Add the [quadratic formula and the PDF of a normal distribution to the document](https://www.overleaf.com/learn/latex/Mathematical_expressions)
+
+3. In extremely [large](https://www.overleaf.com/learn/latex/Font_sizes,_families,_and_styles) text, print LaTeX using the `\LaTeX` command
+
+4. In extremely small, [italic](https://www.overleaf.com/learn/latex/Bold,_italics_and_underlining) text, print your name
+
+---
+name: knitr
+## LaTeX + R?
+
+`Sweave` was the original document compilation system for combining `LaTeX` and `R` (created circa 2002)
+
+- Basic structure was great
+- Caching was terrible (so all code re-ran each time you changed formatting a bit)
+
+`knitr`: created in 2012 by Yihui Xie to be a better version of `Sweave`
+
+- Same basic syntax
+- better caching & dependency management
+- All `Sweave` features + some
+- Support for Python, Perl, C++, shell scripts
+
+<img src="https://github.com/rstudio/hex-stickers/blob/master/PNG/knitr.png?raw=true" class="bottomrightfig" width = "30%"/>
+---
+
+## LaTeX + R?
+
+[knitr reference manual](https://yihui.org/knitr/)
+
+
+To add R code to your .tex file, 
+
+1. Change the file extension from `.tex` to `.Rnw` (Rnw = R no weave, a holdover from `Sweave`)
+
+2. Add R code chunks 
+
+3. Compile your document
+
+
+```
+<<chunk-name, chunk-options>>=
+
+R code here
+
+@
+```
+
+
+---
+
+## LaTeX + R
+
+[Common chunk options](https://yihui.org/knitr/options/):
+
+- `eval = (T/F)`: whether the code is evaluated by R
+- `include = (T/F)`: should code or output from the code be included in the document?
+- `echo = (T/F)`: should code be printed in the document, or just the output?
+- `fig.width, fig.height = `: size of the saved image, in inches 
+- `out.width = `: width of the output image IN THE DOCUMENT
+- `fig.cap = `: Set a figure caption
+- `cache = (T/F)`: Cache the chunk, so that it is only re-run if it changes?
+
+---
+class: inverse
+## Try it out!
+
+Turn your .tex file into an .Rnw file and add some more stuff!
+
+1. Add a histogram of 100 draws from a normal distribution
+```{r, eval = F}
+hist(rnorm(100))
+```
+
+2. Compute the mean of 15 draws from a binomial(10, .5) distribution and print it inline using `\Sexpr{}`
+```{r, eval = F}
+mean(rbinom(15, 10, .5))
+```
+
+3. Use `knitr::kable()` to print out the first 6 rows of the cars dataframe. 
+```{r, eval = F}
+knitr::kable(head(mtcars))
+```
+
+---
+name: mathmode
+## Typesetting math
+
+
+---
+name: rmarkdown
+## Rmarkdown
+
+The [newest release of RStudio](https://rstudio.com/products/rstudio/download/preview/) has WYSIWYG support for RMarkdown (but not yet for LaTeX).
