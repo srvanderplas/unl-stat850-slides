@@ -182,7 +182,7 @@ c(cats[[1]]$characteristics[['Affectionate with Family']],
 
 ---
 name:map-intro
-## Introduction to `map`
+## Setup
 
 ```{r load-pkgs, eval = F}
 library(purrr)
@@ -199,7 +199,7 @@ names(got_chars[[1]])
 ```
 
 ---
-## Introduction to `map`
+## What's in the list?
 
 ```{r}
 got_chars[[1]]
@@ -215,6 +215,11 @@ There are some shorthands - if you pass in a name, for instance, `map` will pull
 ```{r}
 map(got_chars, "name")
 ```
+
+---
+
+![](https://i.imgur.com/lzXopUT.gif)
+
 
 ---
 ## Introduction to `map`
@@ -236,9 +241,9 @@ map_dbl(got_chars, "name")
 `map` is also pipe-friendly
 
 ```{r}
-map_chr(got_chars, "name") %>% map_int(., nchar)
+map_chr(got_chars, "name") %>% 
+  map_int(., nchar)
 ```
-
 
 ---
 ## Introduction to `map`
@@ -249,7 +254,11 @@ There are other shortcuts, too:
 map_chr(got_chars, 4)
 ```
 
-Map will index lists for you automatically.
+This pulls out the 4th item in each sub-list
+
+---
+
+![](https://media.giphy.com/media/fhirrVWFvXp8h3bUUS/giphy.gif)
 
 ---
 class:inverse
