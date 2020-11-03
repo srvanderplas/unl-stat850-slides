@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Purrr</title>
+    <meta charset="utf-8" />
+    <meta name="date" content="2020-11-03" />
+    <script src="template/libs/header-attrs/header-attrs.js"></script>
+    <link href="template/libs/remark-css/default.css" rel="stylesheet" />
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Handlee&family=Montserrat:ital,wght@0,400;0,500;1,400;1,500&family=Roboto:ital,wght@0,500;1,500&display=swap');
+    </style>
+    <link rel="stylesheet" href="template/unl.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Purrr
+## The power of nested lists
+### November 03, 2020
+
+---
+
+
+
+
+## Contents
+
+.pull-left[
+
+- [Review: Lists and Vectors](#review)
+
+- [Introduction to `map`](#map-intro)
+
+- [List columns](#list-cols)
+
+- Ways to use `map`
+
+- Beyond `map`
+
+
+```r
+# setup
+library(tidyverse)
+```
+].pull-right[
+![A cat hissing at a computer](https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif)
+]
+
+---
+name:review
+## Lists and Vectors
+
+A **vector** is a 1-dimensional data structure that contains several things that are all the same type
+
+
+```r
+logical_vec &lt;- c(T, T, F, F)
+numeric_vec &lt;- c(3, 1, 4, 5)
+character_vec &lt;- c("cats", "rule", "dogs", "drool") 
+# not really! but it doesn't make sense if you switch it...
+```
+
+We index vectors using single brackets
+
+
+```r
+character_vec[c(1, 3)]
+```
+
+```
+## [1] "cats" "dogs"
+```
+
+```r
+character_vec[logical_vec]
+```
+
+```
+## [1] "cats" "rule"
+```
+
+---
+## Lists and Vectors
+
+![a vector of cats](https://media.giphy.com/media/UotLuplZSzKRa/giphy.gif)
+
+---
+## Lists and Vectors
+.pull-left[
+A **list** is a 1-dimensional data structure that contains ... anything.
+
+
+```r
+my_list &lt;- list(
+  first = logical_vec,
+  second = list(
+    c("Another", "list"), 
+    c("With", "2", "vectors")),
+  # even model results
+  third = lm(numeric_vec ~ 1), 
+  # And empty entries!
+  fourth = NULL, 
+  # and unnamed things
+  "Unnamed stuff" 
+)
+```
+].pull-right[.small[
+
+```r
+my_list
+```
+
+```
+## $first
+## [1]  TRUE  TRUE FALSE FALSE
+## 
+## $second
+## $second[[1]]
+## [1] "Another" "list"   
+## 
+## $second[[2]]
+## [1] "With"    "2"       "vectors"
+## 
+## 
+## $third
+## 
+## Call:
+## lm(formula = numeric_vec ~ 1)
+## 
+## Coefficients:
+## (Intercept)  
+##        3.25  
+## 
+## 
+## $fourth
+## NULL
+## 
+## [[5]]
+## [1] "Unnamed stuff"
+```
+]]
+
+---
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+
+```r
+# By name
+my_list$second
+```
+
+```
+## [[1]]
+## [1] "Another" "list"   
+## 
+## [[2]]
+## [1] "With"    "2"       "vectors"
+```
+
+---
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+
+```r
+# By position, using single brackets
+my_list[1] # first thing in the list
+```
+
+```
+## $first
+## [1]  TRUE  TRUE FALSE FALSE
+```
+
+(this returns a list)
+
+---
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+```r
+# By position or name, using double brackets
+my_list[["first"]]
+```
+
+```
+## [1]  TRUE  TRUE FALSE FALSE
+```
+
+```r
+my_list[[3]]
+```
+
+```
+## 
+## Call:
+## lm(formula = numeric_vec ~ 1)
+## 
+## Coefficients:
+## (Intercept)  
+##        3.25
+```
+
+This returns the structure inside the list entry, whatever it is.
+
+---
+## Lists of condiments
+
+[R for Data Science](https://r4ds.had.co.nz/vectors.html#lists-of-condiments)
+
+&lt;iframe src="https://r4ds.had.co.nz/vectors.html#lists-of-condiments" width="100%" height = "500px"/&gt;
+
+
+---
+class:inverse
+## Try it out
+
+
+```r
+download.file("http://bit.ly/cat-breeds-data", "cat_breeds.Rdata")
+load("cat_breeds.Rdata")
+```
+
+Create a vector of the first, fifth, and 26th cat breeds in the list
+
+Stretch goal: Create a vector containing the rating for each cat breed above's affection with its family
+
+
+---
+class:inverse
+## Try it out Solution
+
+Create a vector of the first, fifth, and 26th cat breeds in the list
+
+
+```r
+c(cats[[1]]$breed, cats[[5]]$breed, cats[[26]]$breed)
+```
+
+```
+## [1] "Abyssinian"           "American Shorthair"   "Colorpoint Shorthair"
+```
+
+Create a vector containing the rating for each cat breed above's affection with its family
+
+
+```r
+c(cats[[1]]$characteristics[['Affectionate with Family']], 
+  cats[[5]]$characteristics[['Affectionate with Family']], 
+  cats[[26]]$characteristics[['Affectionate with Family']])
+```
+
+```
+## [1] "3" "3" "5"
+```
+
+---
+## Cat break!
+
+.pull-left[
+![cat kissing pig](https://64.media.tumblr.com/tumblr_m5u1tpUZhm1qez631o1_r1_250.gifv)
+].pull-right[
+![pig attempting to kiss cat](https://64.media.tumblr.com/tumblr_m5u1tpUZhm1qez631o2_r1_250.gifv)
+]
+
+---
+name:map-intro
+## Introduction to `map`
+
+
+```r
+library(purrr)
+library(repurrrsive) # demo data
+```
+
+
+
+
+```r
+data(got_chars)
+length(got_chars)
+```
+
+```
+## [1] 30
+```
+
+```r
+names(got_chars[[1]])
+```
+
+```
+##  [1] "url"         "id"          "name"        "gender"      "culture"    
+##  [6] "born"        "died"        "alive"       "titles"      "aliases"    
+## [11] "father"      "mother"      "spouse"      "allegiances" "books"      
+## [16] "povBooks"    "tvSeries"    "playedBy"
+```
+
+---
+## Introduction to `map`
+
+
+```r
+got_chars[[1]]
+```
+
+```
+## $url
+## [1] "https://www.anapioficeandfire.com/api/characters/1022"
+## 
+## $id
+## [1] 1022
+## 
+## $name
+## [1] "Theon Greyjoy"
+## 
+## $gender
+## [1] "Male"
+## 
+## $culture
+## [1] "Ironborn"
+## 
+## $born
+## [1] "In 278 AC or 279 AC, at Pyke"
+## 
+## $died
+## [1] ""
+## 
+## $alive
+## [1] TRUE
+## 
+## $titles
+## [1] "Prince of Winterfell"                                
+## [2] "Captain of Sea Bitch"                                
+## [3] "Lord of the Iron Islands (by law of the green lands)"
+## 
+## $aliases
+## [1] "Prince of Fools" "Theon Turncloak" "Reek"            "Theon Kinslayer"
+## 
+## $father
+## [1] ""
+## 
+## $mother
+## [1] ""
+## 
+## $spouse
+## [1] ""
+## 
+## $allegiances
+## [1] "House Greyjoy of Pyke"
+## 
+## $books
+## [1] "A Game of Thrones" "A Storm of Swords" "A Feast for Crows"
+## 
+## $povBooks
+## [1] "A Clash of Kings"     "A Dance with Dragons"
+## 
+## $tvSeries
+## [1] "Season 1" "Season 2" "Season 3" "Season 4" "Season 5" "Season 6"
+## 
+## $playedBy
+## [1] "Alfie Allen"
+```
+
+---
+## Introduction to `map`
+
+`map` iterates through each item in the list and applies a function.
+
+There are some shorthands - if you pass in a name, for instance, `map` will pull out that item in the list:
+
+
+```r
+map(got_chars, "name")
+```
+
+```
+## [[1]]
+## [1] "Theon Greyjoy"
+## 
+## [[2]]
+## [1] "Tyrion Lannister"
+## 
+## [[3]]
+## [1] "Victarion Greyjoy"
+## 
+## [[4]]
+## [1] "Will"
+## 
+## [[5]]
+## [1] "Areo Hotah"
+## 
+## [[6]]
+## [1] "Chett"
+## 
+## [[7]]
+## [1] "Cressen"
+## 
+## [[8]]
+## [1] "Arianne Martell"
+## 
+## [[9]]
+## [1] "Daenerys Targaryen"
+## 
+## [[10]]
+## [1] "Davos Seaworth"
+## 
+## [[11]]
+## [1] "Arya Stark"
+## 
+## [[12]]
+## [1] "Arys Oakheart"
+## 
+## [[13]]
+## [1] "Asha Greyjoy"
+## 
+## [[14]]
+## [1] "Barristan Selmy"
+## 
+## [[15]]
+## [1] "Varamyr"
+## 
+## [[16]]
+## [1] "Brandon Stark"
+## 
+## [[17]]
+## [1] "Brienne of Tarth"
+## 
+## [[18]]
+## [1] "Catelyn Stark"
+## 
+## [[19]]
+## [1] "Cersei Lannister"
+## 
+## [[20]]
+## [1] "Eddard Stark"
+## 
+## [[21]]
+## [1] "Jaime Lannister"
+## 
+## [[22]]
+## [1] "Jon Connington"
+## 
+## [[23]]
+## [1] "Jon Snow"
+## 
+## [[24]]
+## [1] "Aeron Greyjoy"
+## 
+## [[25]]
+## [1] "Kevan Lannister"
+## 
+## [[26]]
+## [1] "Melisandre"
+## 
+## [[27]]
+## [1] "Merrett Frey"
+## 
+## [[28]]
+## [1] "Quentyn Martell"
+## 
+## [[29]]
+## [1] "Samwell Tarly"
+## 
+## [[30]]
+## [1] "Sansa Stark"
+```
+
+---
+## Introduction to `map`
+
+`map` also makes it easy to force output into the form you want it to take:
+
+```r
+map_chr(got_chars, "name")
+```
+
+```
+##  [1] "Theon Greyjoy"      "Tyrion Lannister"   "Victarion Greyjoy" 
+##  [4] "Will"               "Areo Hotah"         "Chett"             
+##  [7] "Cressen"            "Arianne Martell"    "Daenerys Targaryen"
+## [10] "Davos Seaworth"     "Arya Stark"         "Arys Oakheart"     
+## [13] "Asha Greyjoy"       "Barristan Selmy"    "Varamyr"           
+## [16] "Brandon Stark"      "Brienne of Tarth"   "Catelyn Stark"     
+## [19] "Cersei Lannister"   "Eddard Stark"       "Jaime Lannister"   
+## [22] "Jon Connington"     "Jon Snow"           "Aeron Greyjoy"     
+## [25] "Kevan Lannister"    "Melisandre"         "Merrett Frey"      
+## [28] "Quentyn Martell"    "Samwell Tarly"      "Sansa Stark"
+```
+
+---
+## Introduction to `map`
+
+`map_xxx` will give you an error if you return something of the wrong type
+
+
+```r
+map_dbl(got_chars, "name")
+```
+
+```
+## Error: Can't coerce element 1 from a character to a double
+```
+
+`map` is also pipe-friendly
+
+
+```r
+map_chr(got_chars, "name") %&gt;% map_int(., nchar)
+```
+
+```
+##  [1] 13 16 17  4 10  5  7 15 18 14 10 13 12 15  7 13 16 13 16 12 15 14  8 13 15
+## [26] 10 12 15 13 11
+```
+
+
+---
+## Introduction to `map`
+
+There are other shortcuts, too:
+
+
+```r
+map_chr(got_chars, 4)
+```
+
+```
+##  [1] "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Female"
+##  [9] "Female" "Male"   "Female" "Male"   "Female" "Male"   "Male"   "Male"  
+## [17] "Female" "Female" "Female" "Male"   "Male"   "Male"   "Male"   "Male"  
+## [25] "Male"   "Female" "Male"   "Male"   "Male"   "Female"
+```
+
+Map will index lists for you automatically.
+
+---
+class:inverse
+## Try it out!
+
+Pull out a character vector of the image URLs for each cat breed
+
+
+As a bonus, if you have the `magick` package installed, run this code on your result:
+
+```r
+library(magick)
+ims &lt;- map(cat_urls[1:10], image_read) %&gt;% image_join()
+image_animate(ims, fps = 2)
+```
+
+
+---
+class:inverse
+## Try it out Solutions
+
+Pull out a character vector of the image URLs for each cat breed
+
+
+```r
+cat_urls &lt;- map_chr(cats, 2)
+ims &lt;- map(cat_urls[1:10], image_read) %&gt;% image_join()
+image_animate(ims, fps = 2)
+```
+
+&lt;img src="deps/purrr/unnamed-chunk-22-1.gif" width="75%" /&gt;
+
+---
+## Introduction to `map`
+
+What if we want to pull out multiple values?
+
+`[` is a function!    
+.small[(Or use `magrittr::extract` if it makes you uncomfortable)]
+
+
+```r
+tmp &lt;- map(got_chars, `[`, c("name", "gender", "born", "died"))
+tmp[[2]]
+```
+
+```
+## $name
+## [1] "Tyrion Lannister"
+## 
+## $gender
+## [1] "Male"
+## 
+## $born
+## [1] "In 273 AC, at Casterly Rock"
+## 
+## $died
+## [1] ""
+```
+
+---
+## Introduction to `map`
+
+And if we want, we can even get a data frame, as long as each entry has only one line...
+
+```r
+# There are several extract functions in different pkgs
+# use magrittr::extract to get the one we need
+map_df(got_chars, magrittr::extract, 
+       c("name", "gender", "born", "died"))
+```
+
+```
+## # A tibble: 30 x 4
+##    name           gender born                         died                      
+##    &lt;chr&gt;          &lt;chr&gt;  &lt;chr&gt;                        &lt;chr&gt;                     
+##  1 Theon Greyjoy  Male   "In 278 AC or 279 AC, at Py… ""                        
+##  2 Tyrion Lannis… Male   "In 273 AC, at Casterly Roc… ""                        
+##  3 Victarion Gre… Male   "In 268 AC or before, at Py… ""                        
+##  4 Will           Male   ""                           "In 297 AC, at Haunted Fo…
+##  5 Areo Hotah     Male   "In 257 AC or before, at No… ""                        
+##  6 Chett          Male   "At Hag's Mire"              "In 299 AC, at Fist of th…
+##  7 Cressen        Male   "In 219 AC or 220 AC"        "In 299 AC, at Dragonston…
+##  8 Arianne Marte… Female "In 276 AC, at Sunspear"     ""                        
+##  9 Daenerys Targ… Female "In 284 AC, at Dragonstone"  ""                        
+## 10 Davos Seaworth Male   "In 260 AC or before, at Ki… ""                        
+## # … with 20 more rows
+```
+
+
+---
+class:inverse
+## Try it out! 
+
+Create a data frame of cat information using the single-length items in the `cats` object.
+
+---
+class:inverse
+## Try it out Solutions
+
+Create a data frame of cat information using the single-length items in the `cats` object.
+
+
+```r
+cat_df &lt;- map_df(cats, magrittr::extract, c("breed", "image", "short_desc"))
+cat_df
+```
+
+```
+## # A tibble: 82 x 3
+##    breed      image                           short_desc                        
+##    &lt;chr&gt;      &lt;chr&gt;                           &lt;chr&gt;                             
+##  1 Abyssinian https://cattime.com/assets/upl… A love of heights is a signal tra…
+##  2 Aegean     https://cattime.com/assets/upl… The Aegean is a natural cat breed…
+##  3 American … https://cattime.com/assets/upl… With his short tail, tufted ears …
+##  4 American … https://cattime.com/assets/upl… The Curl stands out for his disti…
+##  5 American … https://cattime.com/assets/upl… The adaptable and good-natured Am…
+##  6 American … https://cattime.com/assets/upl… Sproing! That’s not the typical r…
+##  7 Aphrodite… https://cattime.com/assets/upl… The Aphrodite Giant is a natural …
+##  8 Arabian M… https://cattime.com/assets/upl… The Arabian Mau is a natural cat …
+##  9 Asian      https://cattime.com/assets/upl… The Asian is a mixed breed cat–a …
+## 10 Australia… https://cattime.com/assets/upl… The Australian Mist is a mixed br…
+## # … with 72 more rows
+```
+
+
+---
+name:list-cols
+## Creating (and using) List columns
+
+
+```r
+# What about the characteristics?
+cats[[1]]$characteristics 
+```
+
+```
+## $`Affectionate with Family`
+## [1] "3"
+## 
+## $`Amount of Shedding`
+## [1] "3"
+## 
+## $`General Health`
+## [1] "2"
+## 
+## $`Potential for Playfulness`
+## [1] "5"
+## 
+## $`Kid-Friendly`
+## [1] "5"
+## 
+## $`Easy to Groom`
+## [1] "3"
+## 
+## $Intelligence
+## [1] "5"
+## 
+## $`Pet Friendly`
+## [1] "5"
+```
+
+---
+## Creating List columns
+
+We could write a function to format the list columns the way we want them to be...
+
+like, maybe in a nice data frame?
+
+```r
+fix_characteristics &lt;- function(x) 
+  tibble(characteristic = names(x), 
+         rating = as.numeric(x))
+
+
+fix_characteristics(cats[[1]]$characteristics)
+```
+
+```
+## # A tibble: 8 x 2
+##   characteristic            rating
+##   &lt;chr&gt;                      &lt;dbl&gt;
+## 1 Affectionate with Family       3
+## 2 Amount of Shedding             3
+## 3 General Health                 2
+## 4 Potential for Playfulness      5
+## 5 Kid-Friendly                   5
+## 6 Easy to Groom                  3
+## 7 Intelligence                   5
+## 8 Pet Friendly                   5
+```
+
+---
+## Creating List columns
+
+Then, we can mutate a list-column using map to apply our function to every entry!
+
+
+```r
+cat_df &lt;- cat_df %&gt;%
+  mutate(characteristics = map(cats, "characteristics") %&gt;% 
+           map(fix_characteristics))
+
+select(cat_df, breed, characteristics)
+```
+
+```
+## # A tibble: 82 x 2
+##    breed              characteristics  
+##    &lt;chr&gt;              &lt;list&gt;           
+##  1 Abyssinian         &lt;tibble [8 × 2]&gt; 
+##  2 Aegean             &lt;tibble [10 × 2]&gt;
+##  3 American Bobtail   &lt;tibble [10 × 2]&gt;
+##  4 American Curl      &lt;tibble [9 × 2]&gt; 
+##  5 American Shorthair &lt;tibble [9 × 2]&gt; 
+##  6 American Wirehair  &lt;tibble [9 × 2]&gt; 
+##  7 Aphrodite Giant    &lt;tibble [10 × 2]&gt;
+##  8 Arabian Mau        &lt;tibble [10 × 2]&gt;
+##  9 Asian              &lt;tibble [10 × 2]&gt;
+## 10 Australian Mist    &lt;tibble [10 × 2]&gt;
+## # … with 72 more rows
+```
+
+---
+## Working with List-columns
+
+We can unnest this column if we want each row in the characteristics data frame to have its own row in the main data frame:
+
+
+```r
+select(cat_df, breed, characteristics) %&gt;%
+  unnest(characteristics) %&gt;%
+  ggplot(aes(x = characteristic, y = rating)) + 
+  geom_violin() + coord_flip()
+```
+
+&lt;img src="deps/purrr/unnamed-chunk-29-1.png" width="75%" /&gt;
+
+---
+class:inverse
+## Try it out
+
+1. Write a function that will convert the cat statistics into a data frame.    
+Include columns for min_life_span, max_life_span, min_weight, max_weight, length, and origin.
+
+2. Test your function on one or two cat breeds
+
+3. Use mutate + map to create a list-column with the statistics. 
+
+4. Is there a relationship between breed size and life span?
+
+
+---
+class:inverse
+## Try it out Solutions
+
+
+```r
+cat_stats &lt;- function(x) {
+  tibble(
+    min_life_span = str_extract(x[[1]], "^\\d{1,}") %&gt;% parse_number,
+    max_life_span = str_extract(x[[1]], "to \\d{1,}") %&gt;% parse_number,
+    min_weight = str_extract(x[[3]], "^\\d{1,}") %&gt;% parse_number,
+    max_weight = str_extract(x[[3]], "to \\d{1,}") %&gt;% parse_number,
+    length = x[[2]],
+    origin = x[[4]]
+  )
+}
+
+cat_stats(cats[[1]]$stats)
+```
+
+```
+## # A tibble: 1 x 6
+##   min_life_span max_life_span min_weight max_weight length         origin       
+##           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;        
+## 1             9            15          6         10 12 to 16 inch… Southeast As…
+```
+
+---
+class:inverse
+## Try it out Solutions
+
+
+```r
+cat_df &lt;- cat_df %&gt;%
+  mutate(stats = map(cats, "stats") %&gt;% map(cat_stats))
+
+select(cat_df, breed, stats) %&gt;%
+unnest(stats) %&gt;%
+  ggplot(aes(x = max_weight, y = max_life_span)) + 
+  geom_jitter(amount = .125) + 
+  geom_smooth(method = "lm", se = F)
+```
+
+&lt;img src="deps/purrr/unnamed-chunk-31-1.png" width="75%" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,423 @@
+---
+title: "Purrr"
+subtitle: "The power of nested lists"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  xaringan::moon_reader:
+    css: ["default", "template/unl.css"]
+    lib_dir: template/libs
+    includes:
+      in_header: template/header.html
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.path = "deps/purrr/",
+  fig.width = 6, fig.height = 4, 
+  out.width = "75%", 
+  message = F, warning = F, dpi = 300)
+```
+
+## Contents
+
+.pull-left[
+
+- [Review: Lists and Vectors](#review)
+
+- [Introduction to `map`](#map-intro)
+
+- [List columns](#list-cols)
+
+- Ways to use `map`
+
+- Beyond `map`
+
+```{r}
+# setup
+library(tidyverse)
+```
+].pull-right[
+![A cat hissing at a computer](https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif)
+]
+
+---
+name:review
+## Lists and Vectors
+
+A **vector** is a 1-dimensional data structure that contains several things that are all the same type
+
+```{r}
+logical_vec <- c(T, T, F, F)
+numeric_vec <- c(3, 1, 4, 5)
+character_vec <- c("cats", "rule", "dogs", "drool") 
+# not really! but it doesn't make sense if you switch it...
+```
+
+We index vectors using single brackets
+
+```{r}
+character_vec[c(1, 3)]
+character_vec[logical_vec]
+```
+
+---
+## Lists and Vectors
+
+![a vector of cats](https://media.giphy.com/media/UotLuplZSzKRa/giphy.gif)
+
+---
+## Lists and Vectors
+.pull-left[
+A **list** is a 1-dimensional data structure that contains ... anything.
+
+```{r}
+my_list <- list(
+  first = logical_vec,
+  second = list(
+    c("Another", "list"), 
+    c("With", "2", "vectors")),
+  # even model results
+  third = lm(numeric_vec ~ 1), 
+  # And empty entries!
+  fourth = NULL, 
+  # and unnamed things
+  "Unnamed stuff" 
+)
+```
+].pull-right[.small[
+```{r}
+my_list
+```
+]]
+
+---
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+```{r}
+# By name
+my_list$second
+```
+
+---
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+```{r}
+# By position, using single brackets
+my_list[1] # first thing in the list
+```
+
+(this returns a list)
+
+---
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+```{r}
+# By position or name, using double brackets
+my_list[["first"]]
+
+my_list[[3]]
+```
+
+This returns the structure inside the list entry, whatever it is.
+
+---
+## Lists of condiments
+
+[R for Data Science](https://r4ds.had.co.nz/vectors.html#lists-of-condiments)
+
+<iframe src="https://r4ds.had.co.nz/vectors.html#lists-of-condiments" width="100%" height = "500px"/>
+
+
+---
+class:inverse
+## Try it out
+
+```{r}
+download.file("http://bit.ly/cat-breeds-data", "cat_breeds.Rdata")
+load("cat_breeds.Rdata")
+```
+
+Create a vector of the first, fifth, and 26th cat breeds in the list
+
+Stretch goal: Create a vector containing the rating for each cat breed above's affection with its family
+
+
+---
+class:inverse
+## Try it out Solution
+
+Create a vector of the first, fifth, and 26th cat breeds in the list
+
+```{r}
+c(cats[[1]]$breed, cats[[5]]$breed, cats[[26]]$breed)
+```
+
+Create a vector containing the rating for each cat breed above's affection with its family
+
+```{r}
+c(cats[[1]]$characteristics[['Affectionate with Family']], 
+  cats[[5]]$characteristics[['Affectionate with Family']], 
+  cats[[26]]$characteristics[['Affectionate with Family']])
+
+```
+
+---
+## Cat break!
+
+.pull-left[
+![cat kissing pig](https://64.media.tumblr.com/tumblr_m5u1tpUZhm1qez631o1_r1_250.gifv)
+].pull-right[
+![pig attempting to kiss cat](https://64.media.tumblr.com/tumblr_m5u1tpUZhm1qez631o2_r1_250.gifv)
+]
+
+---
+name:map-intro
+## Introduction to `map`
+
+```{r load-pkgs, eval = F}
+library(purrr)
+library(repurrrsive) # demo data
+```
+
+```{r load-pkgs, eval = T, include = F}
+```
+
+```{r}
+data(got_chars)
+length(got_chars)
+names(got_chars[[1]])
+```
+
+---
+## Introduction to `map`
+
+```{r}
+got_chars[[1]]
+```
+
+---
+## Introduction to `map`
+
+`map` iterates through each item in the list and applies a function.
+
+There are some shorthands - if you pass in a name, for instance, `map` will pull out that item in the list:
+
+```{r}
+map(got_chars, "name")
+```
+
+---
+## Introduction to `map`
+
+`map` also makes it easy to force output into the form you want it to take:
+```{r}
+map_chr(got_chars, "name")
+```
+
+---
+## Introduction to `map`
+
+`map_xxx` will give you an error if you return something of the wrong type
+
+```{r, error = T}
+map_dbl(got_chars, "name")
+```
+
+`map` is also pipe-friendly
+
+```{r}
+map_chr(got_chars, "name") %>% map_int(., nchar)
+```
+
+
+---
+## Introduction to `map`
+
+There are other shortcuts, too:
+
+```{r}
+map_chr(got_chars, 4)
+```
+
+Map will index lists for you automatically.
+
+---
+class:inverse
+## Try it out!
+
+Pull out a character vector of the image URLs for each cat breed
+```{r, echo = F}
+cat_urls <- map_chr(cats, 2)
+```
+
+As a bonus, if you have the `magick` package installed, run this code on your result:
+```{r, eval = F}
+library(magick)
+ims <- map(cat_urls[1:10], image_read) %>% image_join()
+image_animate(ims, fps = 2)
+```
+```{r, echo = F}
+library(magick)
+```
+
+---
+class:inverse
+## Try it out Solutions
+
+Pull out a character vector of the image URLs for each cat breed
+
+```{r, echo = T}
+cat_urls <- map_chr(cats, 2)
+ims <- map(cat_urls[1:10], image_read) %>% image_join()
+image_animate(ims, fps = 2)
+```
+
+---
+## Introduction to `map`
+
+What if we want to pull out multiple values?
+
+`[` is a function!    
+.small[(Or use `magrittr::extract` if it makes you uncomfortable)]
+
+```{r}
+tmp <- map(got_chars, `[`, c("name", "gender", "born", "died"))
+tmp[[2]]
+```
+
+---
+## Introduction to `map`
+
+And if we want, we can even get a data frame, as long as each entry has only one line...
+```{r}
+# There are several extract functions in different pkgs
+# use magrittr::extract to get the one we need
+map_df(got_chars, magrittr::extract, 
+       c("name", "gender", "born", "died"))
+```
+
+
+---
+class:inverse
+## Try it out! 
+
+Create a data frame of cat information using the single-length items in the `cats` object.
+
+---
+class:inverse
+## Try it out Solutions
+
+Create a data frame of cat information using the single-length items in the `cats` object.
+
+```{r}
+cat_df <- map_df(cats, magrittr::extract, c("breed", "image", "short_desc"))
+cat_df
+```
+
+
+---
+name:list-cols
+## Creating (and using) List columns
+
+```{r}
+# What about the characteristics?
+cats[[1]]$characteristics 
+```
+
+---
+## Creating List columns
+
+We could write a function to format the list columns the way we want them to be...
+
+like, maybe in a nice data frame?
+```{r}
+fix_characteristics <- function(x) 
+  tibble(characteristic = names(x), 
+         rating = as.numeric(x))
+
+
+fix_characteristics(cats[[1]]$characteristics)
+```
+
+---
+## Creating List columns
+
+Then, we can mutate a list-column using map to apply our function to every entry!
+
+```{r}
+cat_df <- cat_df %>%
+  mutate(characteristics = map(cats, "characteristics") %>% 
+           map(fix_characteristics))
+
+select(cat_df, breed, characteristics)
+```
+
+---
+## Working with List-columns
+
+We can unnest this column if we want each row in the characteristics data frame to have its own row in the main data frame:
+
+```{r}
+select(cat_df, breed, characteristics) %>%
+  unnest(characteristics) %>%
+  ggplot(aes(x = characteristic, y = rating)) + 
+  geom_violin() + coord_flip()
+```
+
+---
+class:inverse
+## Try it out
+
+1. Write a function that will convert the cat statistics into a data frame.    
+Include columns for min_life_span, max_life_span, min_weight, max_weight, length, and origin.
+
+2. Test your function on one or two cat breeds
+
+3. Use mutate + map to create a list-column with the statistics. 
+
+4. Is there a relationship between breed size and life span?
+
+
+---
+class:inverse
+## Try it out Solutions
+
+```{r}
+cat_stats <- function(x) {
+  tibble(
+    min_life_span = str_extract(x[[1]], "^\\d{1,}") %>% parse_number,
+    max_life_span = str_extract(x[[1]], "to \\d{1,}") %>% parse_number,
+    min_weight = str_extract(x[[3]], "^\\d{1,}") %>% parse_number,
+    max_weight = str_extract(x[[3]], "to \\d{1,}") %>% parse_number,
+    length = x[[2]],
+    origin = x[[4]]
+  )
+}
+
+cat_stats(cats[[1]]$stats)
+```
+
+---
+class:inverse
+## Try it out Solutions
+
+```{r, fig.width = 4, fig.height = 2}
+cat_df <- cat_df %>%
+  mutate(stats = map(cats, "stats") %>% map(cat_stats))
+
+select(cat_df, breed, stats) %>%
+unnest(stats) %>%
+  ggplot(aes(x = max_weight, y = max_life_span)) + 
+  geom_jitter(amount = .125) + 
+  geom_smooth(method = "lm", se = F)
+```
