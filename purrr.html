@@ -222,7 +222,9 @@ class:inverse
 
 
 ```r
-download.file("http://bit.ly/cat-breeds-data", "cat_breeds.Rdata")
+download.file("http://bit.ly/cat-breeds-data",
+              "cat_breeds.Rdata", 
+              mode = "wb") # for the windows users
 load("cat_breeds.Rdata")
 ```
 
@@ -295,9 +297,10 @@ names(got_chars[[1]])
 ```
 
 ```
-##  [1] "url"         "id"          "name"        "gender"      "culture"     "born"       
-##  [7] "died"        "alive"       "titles"      "aliases"     "father"      "mother"     
-## [13] "spouse"      "allegiances" "books"       "povBooks"    "tvSeries"    "playedBy"
+##  [1] "url"         "id"          "name"        "gender"      "culture"    
+##  [6] "born"        "died"        "alive"       "titles"      "aliases"    
+## [11] "father"      "mother"      "spouse"      "allegiances" "books"      
+## [16] "povBooks"    "tvSeries"    "playedBy"
 ```
 
 ---
@@ -485,14 +488,16 @@ map_chr(got_chars, "name")
 ```
 
 ```
-##  [1] "Theon Greyjoy"      "Tyrion Lannister"   "Victarion Greyjoy"  "Will"              
-##  [5] "Areo Hotah"         "Chett"              "Cressen"            "Arianne Martell"   
-##  [9] "Daenerys Targaryen" "Davos Seaworth"     "Arya Stark"         "Arys Oakheart"     
-## [13] "Asha Greyjoy"       "Barristan Selmy"    "Varamyr"            "Brandon Stark"     
-## [17] "Brienne of Tarth"   "Catelyn Stark"      "Cersei Lannister"   "Eddard Stark"      
-## [21] "Jaime Lannister"    "Jon Connington"     "Jon Snow"           "Aeron Greyjoy"     
-## [25] "Kevan Lannister"    "Melisandre"         "Merrett Frey"       "Quentyn Martell"   
-## [29] "Samwell Tarly"      "Sansa Stark"
+##  [1] "Theon Greyjoy"      "Tyrion Lannister"   "Victarion Greyjoy" 
+##  [4] "Will"               "Areo Hotah"         "Chett"             
+##  [7] "Cressen"            "Arianne Martell"    "Daenerys Targaryen"
+## [10] "Davos Seaworth"     "Arya Stark"         "Arys Oakheart"     
+## [13] "Asha Greyjoy"       "Barristan Selmy"    "Varamyr"           
+## [16] "Brandon Stark"      "Brienne of Tarth"   "Catelyn Stark"     
+## [19] "Cersei Lannister"   "Eddard Stark"       "Jaime Lannister"   
+## [22] "Jon Connington"     "Jon Snow"           "Aeron Greyjoy"     
+## [25] "Kevan Lannister"    "Melisandre"         "Merrett Frey"      
+## [28] "Quentyn Martell"    "Samwell Tarly"      "Sansa Stark"
 ```
 
 ---
@@ -518,8 +523,8 @@ map_chr(got_chars, "name") %&gt;%
 ```
 
 ```
-##  [1] 13 16 17  4 10  5  7 15 18 14 10 13 12 15  7 13 16 13 16 12 15 14  8 13 15 10 12 15
-## [29] 13 11
+##  [1] 13 16 17  4 10  5  7 15 18 14 10 13 12 15  7 13 16 13 16 12 15 14  8 13 15
+## [26] 10 12 15 13 11
 ```
 
 ---
@@ -533,10 +538,10 @@ map_chr(got_chars, 4)
 ```
 
 ```
-##  [1] "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Female" "Female"
-## [10] "Male"   "Female" "Male"   "Female" "Male"   "Male"   "Male"   "Female" "Female"
-## [19] "Female" "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Female" "Male"  
-## [28] "Male"   "Male"   "Female"
+##  [1] "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Male"   "Female"
+##  [9] "Female" "Male"   "Female" "Male"   "Female" "Male"   "Male"   "Male"  
+## [17] "Female" "Female" "Female" "Male"   "Male"   "Male"   "Male"   "Male"  
+## [25] "Male"   "Female" "Male"   "Male"   "Male"   "Female"
 ```
 
 This pulls out the 4th item in each sub-list
@@ -618,18 +623,18 @@ map_df(got_chars, magrittr::extract,
 
 ```
 ## # A tibble: 30 x 4
-##    name            gender born                             died                         
-##    &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;                            &lt;chr&gt;                        
-##  1 Theon Greyjoy   Male   "In 278 AC or 279 AC, at Pyke"   ""                           
-##  2 Tyrion Lannist… Male   "In 273 AC, at Casterly Rock"    ""                           
-##  3 Victarion Grey… Male   "In 268 AC or before, at Pyke"   ""                           
-##  4 Will            Male   ""                               "In 297 AC, at Haunted Fores…
-##  5 Areo Hotah      Male   "In 257 AC or before, at Norvos" ""                           
-##  6 Chett           Male   "At Hag's Mire"                  "In 299 AC, at Fist of the F…
-##  7 Cressen         Male   "In 219 AC or 220 AC"            "In 299 AC, at Dragonstone"  
-##  8 Arianne Martell Female "In 276 AC, at Sunspear"         ""                           
-##  9 Daenerys Targa… Female "In 284 AC, at Dragonstone"      ""                           
-## 10 Davos Seaworth  Male   "In 260 AC or before, at King's… ""                           
+##    name           gender born                         died                      
+##    &lt;chr&gt;          &lt;chr&gt;  &lt;chr&gt;                        &lt;chr&gt;                     
+##  1 Theon Greyjoy  Male   "In 278 AC or 279 AC, at Py… ""                        
+##  2 Tyrion Lannis… Male   "In 273 AC, at Casterly Roc… ""                        
+##  3 Victarion Gre… Male   "In 268 AC or before, at Py… ""                        
+##  4 Will           Male   ""                           "In 297 AC, at Haunted Fo…
+##  5 Areo Hotah     Male   "In 257 AC or before, at No… ""                        
+##  6 Chett          Male   "At Hag's Mire"              "In 299 AC, at Fist of th…
+##  7 Cressen        Male   "In 219 AC or 220 AC"        "In 299 AC, at Dragonston…
+##  8 Arianne Marte… Female "In 276 AC, at Sunspear"     ""                        
+##  9 Daenerys Targ… Female "In 284 AC, at Dragonstone"  ""                        
+## 10 Davos Seaworth Male   "In 260 AC or before, at Ki… ""                        
 ## # … with 20 more rows
 ```
 
@@ -654,18 +659,18 @@ cat_df
 
 ```
 ## # A tibble: 82 x 3
-##    breed      image                               short_desc                            
-##    &lt;chr&gt;      &lt;chr&gt;                               &lt;chr&gt;                                 
-##  1 Abyssinian https://cattime.com/assets/uploads… A love of heights is a signal trait o…
-##  2 Aegean     https://cattime.com/assets/uploads… The Aegean is a natural cat breed cat…
-##  3 American … https://cattime.com/assets/uploads… With his short tail, tufted ears and …
-##  4 American … https://cattime.com/assets/uploads… The Curl stands out for his distincti…
-##  5 American … https://cattime.com/assets/uploads… The adaptable and good-natured Americ…
-##  6 American … https://cattime.com/assets/uploads… Sproing! That’s not the typical react…
-##  7 Aphrodite… https://cattime.com/assets/uploads… The Aphrodite Giant is a natural cat …
-##  8 Arabian M… https://cattime.com/assets/uploads… The Arabian Mau is a natural cat bree…
-##  9 Asian      https://cattime.com/assets/uploads… The Asian is a mixed breed cat–a cros…
-## 10 Australia… https://cattime.com/assets/uploads… The Australian Mist is a mixed breed …
+##    breed      image                           short_desc                        
+##    &lt;chr&gt;      &lt;chr&gt;                           &lt;chr&gt;                             
+##  1 Abyssinian https://cattime.com/assets/upl… A love of heights is a signal tra…
+##  2 Aegean     https://cattime.com/assets/upl… The Aegean is a natural cat breed…
+##  3 American … https://cattime.com/assets/upl… With his short tail, tufted ears …
+##  4 American … https://cattime.com/assets/upl… The Curl stands out for his disti…
+##  5 American … https://cattime.com/assets/upl… The adaptable and good-natured Am…
+##  6 American … https://cattime.com/assets/upl… Sproing! That’s not the typical r…
+##  7 Aphrodite… https://cattime.com/assets/upl… The Aphrodite Giant is a natural …
+##  8 Arabian M… https://cattime.com/assets/upl… The Arabian Mau is a natural cat …
+##  9 Asian      https://cattime.com/assets/upl… The Asian is a mixed breed cat–a …
+## 10 Australia… https://cattime.com/assets/upl… The Australian Mist is a mixed br…
 ## # … with 72 more rows
 ```
 
@@ -818,9 +823,9 @@ cat_stats(cats[[1]]$stats)
 
 ```
 ## # A tibble: 1 x 6
-##   min_life_span max_life_span min_weight max_weight length          origin        
-##           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         
-## 1             9            15          6         10 12 to 16 inches Southeast Asia
+##   min_life_span max_life_span min_weight max_weight length         origin       
+##           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;        
+## 1             9            15          6         10 12 to 16 inch… Southeast As…
 ```
 
 ---

@@ -143,7 +143,9 @@ class:inverse
 ## Try it out
 
 ```{r}
-download.file("http://bit.ly/cat-breeds-data", "cat_breeds.Rdata")
+download.file("http://bit.ly/cat-breeds-data",
+              "cat_breeds.Rdata", 
+              mode = "wb") # for the windows users
 load("cat_breeds.Rdata")
 ```
 
