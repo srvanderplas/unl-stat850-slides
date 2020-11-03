@@ -34,9 +34,9 @@ class: center, middle, inverse, title-slide
 
 - [List columns](#list-cols)
 
-- Ways to use `map`
+- [Ways to use `map`](#uses)
 
-- Beyond `map`
+- [Beyond `map`](#otherfns)
 
 
 ```r
@@ -840,6 +840,33 @@ unnest(stats) %&gt;%
 ```
 
 &lt;img src="deps/purrr/unnamed-chunk-31-1.png" width="75%" /&gt;
+
+---
+name:uses
+## Ways to use purrr
+
+- Read in multiple files, fit a model to each dataset
+
+- Create lists of predictor variables, fit a model with those variables to the same dataset and compare
+
+- Keep your data stored in a single data frame, only accessing the pieces you need at any given time
+
+- Run simulations and store the simulation results in a column
+
+- Store the data, data cleaning steps, and model results in a single data frame
+
+---
+name:otherfns
+## Beyond `map`
+
+- map2 takes two inputs, .x and .y, and applies function(.x, .y) to each combination
+
+- pmap takes a list of inputs and applies a function to each combination
+
+- walk takes inputs and applies a function to them but doesn't store results (useful for e.g. printing out plots)
+
+
+- lots of other helper functions in `purrr`
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
