@@ -1,0 +1,119 @@
+---
+title: "Interactive Graphics"
+subtitle: "Plotly and Leaflet"
+author: "Susan Vanderplas"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  xaringan::moon_reader:
+    css: ["default", "template/unl.css"]
+    lib_dir: libs
+    includes:
+      in_header: template/header.html
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo = T, 
+  fig.path = "deps/interactive/",
+  message = F, warning = F, 
+  fig.width = 8, fig.height = 6, 
+  out.width = "100%")
+```
+
+class:inverse,middle,center
+# Plotly
+
+---
+## Plotly
+
+```{r penguin-plotly-box, eval = F}
+library(palmerpenguins)
+library(tidyverse)
+library(plotly)
+
+p <- penguins %>%
+  ggplot(aes(x = species, y = body_mass_g)) + 
+  geom_boxplot() + 
+  coord_flip()
+ggplotly(p)
+
+```
+
+---
+## Plotly
+
+```{r penguin-plotly-box, echo = F, eval = T}
+```
+
+---
+
+## Interactivity in Plotly
+
+- Predetermined user interactivity
+
+- Precomputed output
+
+- Zoom, filter, details-on-demand, mouseover
+
+- With JS skills, linked plots
+
+
+---
+class:inverse,middle,center
+# Leaflet
+
+---
+
+## Leaflet
+
+```{r leaflet-bridges, eval = F}
+library(leaflet)
+# Tidy tuesday: Baltimore bridges
+bridges <- readr::read_csv('https://bit.ly/3jyMXm7') %>% 
+  mutate(color = str_replace_all(bridge_condition,
+                                 c("Fair" = "orange", 
+                                   "Good" = "yellow", 
+                                   "Poor" = "red"))) 
+
+bridges %>%
+  leaflet() %>%
+  addTiles() %>%
+  addCircleMarkers(~long, ~lat, color = ~color, 
+                   radius = 3, stroke = F, fillOpacity = 0.5)
+```
+
+---
+
+## Leaflet
+
+
+```{r leaflet-bridges, echo = F, eval = T}
+```
+
+---
+
+## Leaflet
+
+```{r leaflet-bridges2, fig.height = 4, fig.width = 4, out.width = "50%"}
+new_basemap <- "https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png"
+bridges %>% leaflet() %>%
+  addTiles(new_basemap) %>% 
+  addCircleMarkers(~long, ~lat, color = ~color)
+```
+
+
+---
+
+## Interactivity in Leaflet
+
+- Mouseover
+
+- Zoom in
+
+- Filter
+
+- With JS skills, linked plots
