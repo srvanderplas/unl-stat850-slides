@@ -23,7 +23,8 @@ counties %>%
   ggplot() + geom_sf()
 
 # Underneath, this is just a list of lat/long points
-x[[1]][[1]] %>% plot()
+counties[11,]
+counties$geometry[[11]][[1]] %>% plot()
 
 
 # Question: Why are the points spaced differently?
@@ -42,10 +43,10 @@ dat2 <- counties %>%
   ungroup() %>%
   mutate(geometry = geometry %>% st_transform(proj1) %>% st_simplify(dTolerance = 1) %>% st_transform(proj2))
 
-dim(counties$geometry[[1]][[1]])
-dim(dat2$geometry[[1]][[1]])
-counties$geometry[[1]][[1]] %>% plot()
-dat2$geometry[[1]][[1]] %>% points(col = "red")
+dim(counties$geometry[[11]][[1]])
+dim(dat2$geometry[[11]][[1]])
+counties$geometry[[11]][[1]] %>% plot()
+dat2$geometry[[11]][[1]] %>% points(col = "red")
 # So we've reduced the number of points quite a bit...
 
 
@@ -59,6 +60,7 @@ head(roads)
 ggplot() +
   geom_sf(data = counties, fill = "white") +
   geom_sf(data = roads, aes(color = RTTYP)) +
+  scale_color_discrete("Road Type") +
   theme_bw()
 
 # We can also merge in new data (with or without shape info) using e.g. FIPS codes to indicate state/counties
@@ -106,4 +108,6 @@ counties %>%
          county_name = str_remove(Combined_Key, ", Nebraska, US")) %>%
   ggplot() +
   geom_sf(aes(fill = rate)) +
-  geom_text(aes(x = Long_, y = Lat, label = county_name), color = "white")
+  geom_text(aes(x = Long_, y = Lat, label = county_name), color = "white") +
+  scale_fill_viridis_c()
+
