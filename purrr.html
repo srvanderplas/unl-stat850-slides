@@ -3,7 +3,7 @@
   <head>
     <title>Purrr</title>
     <meta charset="utf-8" />
-    <meta name="date" content="2020-11-03" />
+    <meta name="date" content="2021-12-07" />
     <script src="template/libs/header-attrs/header-attrs.js"></script>
     <link href="template/libs/remark-css/default.css" rel="stylesheet" />
     <style>
@@ -17,7 +17,7 @@ class: center, middle, inverse, title-slide
 
 # Purrr
 ## The power of nested lists
-### November 03, 2020
+### December 07, 2021
 
 ---
 
@@ -622,19 +622,19 @@ map_df(got_chars, magrittr::extract,
 ```
 
 ```
-## # A tibble: 30 x 4
-##    name           gender born                         died                      
-##    &lt;chr&gt;          &lt;chr&gt;  &lt;chr&gt;                        &lt;chr&gt;                     
-##  1 Theon Greyjoy  Male   "In 278 AC or 279 AC, at Py… ""                        
-##  2 Tyrion Lannis… Male   "In 273 AC, at Casterly Roc… ""                        
-##  3 Victarion Gre… Male   "In 268 AC or before, at Py… ""                        
-##  4 Will           Male   ""                           "In 297 AC, at Haunted Fo…
-##  5 Areo Hotah     Male   "In 257 AC or before, at No… ""                        
-##  6 Chett          Male   "At Hag's Mire"              "In 299 AC, at Fist of th…
-##  7 Cressen        Male   "In 219 AC or 220 AC"        "In 299 AC, at Dragonston…
-##  8 Arianne Marte… Female "In 276 AC, at Sunspear"     ""                        
-##  9 Daenerys Targ… Female "In 284 AC, at Dragonstone"  ""                        
-## 10 Davos Seaworth Male   "In 260 AC or before, at Ki… ""                        
+## # A tibble: 30 × 4
+##    name               gender born                                     died      
+##    &lt;chr&gt;              &lt;chr&gt;  &lt;chr&gt;                                    &lt;chr&gt;     
+##  1 Theon Greyjoy      Male   "In 278 AC or 279 AC, at Pyke"           ""        
+##  2 Tyrion Lannister   Male   "In 273 AC, at Casterly Rock"            ""        
+##  3 Victarion Greyjoy  Male   "In 268 AC or before, at Pyke"           ""        
+##  4 Will               Male   ""                                       "In 297 A…
+##  5 Areo Hotah         Male   "In 257 AC or before, at Norvos"         ""        
+##  6 Chett              Male   "At Hag's Mire"                          "In 299 A…
+##  7 Cressen            Male   "In 219 AC or 220 AC"                    "In 299 A…
+##  8 Arianne Martell    Female "In 276 AC, at Sunspear"                 ""        
+##  9 Daenerys Targaryen Female "In 284 AC, at Dragonstone"              ""        
+## 10 Davos Seaworth     Male   "In 260 AC or before, at King's Landing" ""        
 ## # … with 20 more rows
 ```
 
@@ -658,19 +658,19 @@ cat_df
 ```
 
 ```
-## # A tibble: 82 x 3
-##    breed      image                           short_desc                        
-##    &lt;chr&gt;      &lt;chr&gt;                           &lt;chr&gt;                             
-##  1 Abyssinian https://cattime.com/assets/upl… A love of heights is a signal tra…
-##  2 Aegean     https://cattime.com/assets/upl… The Aegean is a natural cat breed…
-##  3 American … https://cattime.com/assets/upl… With his short tail, tufted ears …
-##  4 American … https://cattime.com/assets/upl… The Curl stands out for his disti…
-##  5 American … https://cattime.com/assets/upl… The adaptable and good-natured Am…
-##  6 American … https://cattime.com/assets/upl… Sproing! That’s not the typical r…
-##  7 Aphrodite… https://cattime.com/assets/upl… The Aphrodite Giant is a natural …
-##  8 Arabian M… https://cattime.com/assets/upl… The Arabian Mau is a natural cat …
-##  9 Asian      https://cattime.com/assets/upl… The Asian is a mixed breed cat–a …
-## 10 Australia… https://cattime.com/assets/upl… The Australian Mist is a mixed br…
+## # A tibble: 82 × 3
+##    breed              image                       short_desc                    
+##    &lt;chr&gt;              &lt;chr&gt;                       &lt;chr&gt;                         
+##  1 Abyssinian         https://cattime.com/assets… A love of heights is a signal…
+##  2 Aegean             https://cattime.com/assets… The Aegean is a natural cat b…
+##  3 American Bobtail   https://cattime.com/assets… With his short tail, tufted e…
+##  4 American Curl      https://cattime.com/assets… The Curl stands out for his d…
+##  5 American Shorthair https://cattime.com/assets… The adaptable and good-nature…
+##  6 American Wirehair  https://cattime.com/assets… Sproing! That’s not the typic…
+##  7 Aphrodite Giant    https://cattime.com/assets… The Aphrodite Giant is a natu…
+##  8 Arabian Mau        https://cattime.com/assets… The Arabian Mau is a natural …
+##  9 Asian              https://cattime.com/assets… The Asian is a mixed breed ca…
+## 10 Australian Mist    https://cattime.com/assets… The Australian Mist is a mixe…
 ## # … with 72 more rows
 ```
 
@@ -728,7 +728,7 @@ fix_characteristics(cats[[1]]$characteristics)
 ```
 
 ```
-## # A tibble: 8 x 2
+## # A tibble: 8 × 2
 ##   characteristic            rating
 ##   &lt;chr&gt;                      &lt;dbl&gt;
 ## 1 Affectionate with Family       3
@@ -756,7 +756,7 @@ select(cat_df, breed, characteristics)
 ```
 
 ```
-## # A tibble: 82 x 2
+## # A tibble: 82 × 2
 ##    breed              characteristics  
 ##    &lt;chr&gt;              &lt;list&gt;           
 ##  1 Abyssinian         &lt;tibble [8 × 2]&gt; 
@@ -822,10 +822,10 @@ cat_stats(cats[[1]]$stats)
 ```
 
 ```
-## # A tibble: 1 x 6
-##   min_life_span max_life_span min_weight max_weight length         origin       
-##           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;        
-## 1             9            15          6         10 12 to 16 inch… Southeast As…
+## # A tibble: 1 × 6
+##   min_life_span max_life_span min_weight max_weight length          origin      
+##           &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;       
+## 1             9            15          6         10 12 to 16 inches Southeast A…
 ```
 
 ---
@@ -876,6 +876,7 @@ name:otherfns
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
+"ratio": "16:9",
 "highlightStyle": "github",
 "highlightLines": true,
 "countIncrementalSlides": false

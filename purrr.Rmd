@@ -9,6 +9,7 @@ output:
     includes:
       in_header: template/header.html
     nature:
+      ratio: '16:9'
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
