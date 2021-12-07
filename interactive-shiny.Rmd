@@ -1,6 +1,6 @@
 ---
 title: "Interactive Graphics"
-subtitle: "Plotly and Leaflet"
+subtitle: "Shiny"
 author: "Susan Vanderplas"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
