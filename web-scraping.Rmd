@@ -128,6 +128,7 @@ cat_breeds <- cat_breeds %>%
   mutate(name = map(page, html_element, ".content h1") %>% 
            map_chr(html_text))
 
+cat_breeds$name
 ```
 
 ---

@@ -148,6 +148,50 @@ cat_breeds[1,]
 cat_breeds &lt;- cat_breeds %&gt;%
   mutate(name = map(page, html_element, ".content h1") %&gt;% 
            map_chr(html_text))
+
+cat_breeds$name
+```
+
+```
+##  [1] "American Shorthair"   "Abyssinian"          
+##  [3] "American Curl"        "American Bobtail"    
+##  [5] "American Wirehair"    "Aegean"              
+##  [7] "Australian Mist"      "American Polydactyl" 
+##  [9] "Arabian Mau"          "Asian cat"           
+## [11] "Asian Semi-longhair"  "British Shorthair"   
+## [13] "Bengal"               "Burmese"             
+## [15] "Birman"               "Balinese"            
+## [17] "Bombay"               "Burmilla"            
+## [19] "Bambino"              "Brazilian Shorthair" 
+## [21] "British Longhair"     "Cornish Rex"         
+## [23] "Colorpoint Shorthair" "Chartreux"           
+## [25] "California Spangled"  "Cymric"              
+## [27] "Chantilly-Tiffany"    "Chausie"             
+## [29] "Cheetoh"              "Cyprus"              
+## [31] "Devon Rex"            NA                    
+## [33] NA                     "Exotic Shorthair"    
+## [35] "Egyptian Mau"         "European Burmese"    
+## [37] NA                     "Havana Brown"        
+## [39] "Himalayan"            "Japanese Bobtail"    
+## [41] "Javanese"             "Khao Manee"          
+## [43] "Korat"                "Lykoi"               
+## [45] "LaPerm"               "Maine Coon"          
+## [47] "Manx"                 "Munchkin"            
+## [49] NA                     "Norwegian Forest Cat"
+## [51] "Nebelung"             NA                    
+## [53] "Oriental"             "Ocicat"              
+## [55] "Persian"              "Pixie-bob"           
+## [57] NA                     "Ragdoll"             
+## [59] "Russian Blue"         "Ragamuffin"          
+## [61] "Sphynx"               "Scottish Fold"       
+## [63] "Siamese"              "Siberian"            
+## [65] "Selkirk Rex"          "Somali"              
+## [67] "Singapura"            "Savannah"            
+## [69] "Snowshoe"             NA                    
+## [71] NA                     "Tonkinese"           
+## [73] "Turkish Angora"       "Turkish Van"         
+## [75] "Toyger"               NA                    
+## [77] NA                     "York Chocolate"
 ```
 
 ---
