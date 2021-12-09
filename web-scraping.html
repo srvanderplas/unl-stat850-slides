@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Stat 850 - Web Scraping</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Susan Vanderplas" />
+    <script src="libs/header-attrs-2.11/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Handlee&family=Montserrat:ital,wght@0,400;0,500;1,400;1,500&family=Roboto:ital,wght@0,500;1,500&display=swap');
+    </style>
+    <link rel="stylesheet" href="template/unl.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 850 - Web Scraping
+### Susan Vanderplas
+
+---
+
+
+
+
+
+## Web Scraping 
+
+- Transform data from web pages into usable information
+
+- Automate the process
+
+- Use data cleaning tools to get the data into a format suitable for statistical analysis/visualization
+
+
+---
+
+## `rvest` + `xml2`: Easy Web Scraping
+  
+- `read_html` gets the full set of HTML markup from a URL
+
+
+```r
+library(rvest)
+library(xml2)
+url &lt;- "https://www.catbreedslist.com/all-cat-breeds/american-shorthair.html"
+html &lt;- read_html(url)
+html
+```
+
+```
+## {html_document}
+## &lt;html lang="en-US"&gt;
+## [1] &lt;head&gt;\n&lt;meta http-equiv="Content-Type" content="text ...
+## [2] &lt;body&gt;\r\n&lt;div class="header"&gt;\r\n&lt;div class="wrapper ...
+```
+
+- Use `html_attr`, `html_node`, `html_table`, and `html_text` to extract useful information from the markup
+
+---
+
+## HTML Structure
+
+- HTML and XML are markup languages which use a series of tags: 
+
+    &lt;tagname, tag-attribute1 = '...'&gt; tag-value &lt;/tagname&gt;
+
+- We can parse HTML by carefully selecting the right tag names and attributes 
+
+- This requires examining the HTML directly in most cases
+
+
+---
+
+## SelectorGadget
+
+- SelectorGadget is a javascript bookmarklet to determine the css selectors of pieces of a website we want to extract.
+
+- Bookmark the [SelectorGadget](https://rvest.tidyverse.org/articles/selectorgadget.html) link, then click on it to use it (or add the chrome extension)
+
+- When SelectorGadget is active, pieces of the website are highlighted in orange/green/red.
+
+- Use SelectorGadget on https://www.catbreedslist.com/cat-breeds-a-z/ .
+    - Can you find a selector that will get you a link to each cat's information page?
+
+If you prefer, you can also read the HTML code and create your own [CSS](https://www.w3schools.com/cssref/css_selectors.asp) or [XPATH](https://www.w3schools.com/xml/xpath_syntax.asp) selectors. 
+(This is what I do usually -- it's a bit more precise)
+
+
+---
+class:inverse
+## Our Turn
+
+Use Selector Gadget to get the links to each cat's information page.
+
+Hint: Links are indicated with an `&lt;a href="url"&gt;Link text&lt;/a&gt;` structure
+
+Bonus: Use `purrr` - it's perfect for this!
+
+
+```r
+all_breeds &lt;- "https://www.catbreedslist.com/cat-breeds-a-z/"
+
+cat_info_links &lt;- all_breeds %&gt;%
+  read_html() %&gt;%
+  # Add an a to the SelectorGadget CSS search
+  html_elements(css = ".all-a-z dd a") %&gt;%
+  # Use xml_attr to get the href parameter
+  map_chr(xml_attr, attr = "href")
+```
+
+---
+## What do we do now?
+
+- We have a list of structured web pages that contain the same information (we hope)
+
+- Can we systematically pull all of the information out?
+
+
+---
+## Reading Cat Information
+
+
+```r
+# Let's make a tibble:
+cat_breeds &lt;- tibble(url = cat_info_links) %&gt;%
+  # Make the link valid by adding the front part
+  mutate(url = paste0("http://catbreedslist.com", url)) %&gt;%
+  # Read each page in
+  mutate(page = map(url, read_html))
+
+cat_breeds[1,]
+```
+
+```
+## # A tibble: 1 × 2
+##   url                                              page     
+##   &lt;chr&gt;                                            &lt;list&gt;   
+## 1 http://catbreedslist.com/all-cat-breeds/america… &lt;xml_dcm…
+```
+
+---
+## Reading Cat Names
+
+
+```r
+cat_breeds &lt;- cat_breeds %&gt;%
+  mutate(name = map(page, html_element, ".content h1") %&gt;% 
+           map_chr(html_text))
+```
+
+---
+## Cat Images
+
+
+```r
+# Start at the top of the page with the images
+cat_breeds &lt;- cat_breeds %&gt;%
+  # Get all images on the page in slides
+  mutate(images = map(page, html_elements, ".slideshow .Slides img")) %&gt;%
+  # Pull out each image's src link
+  mutate(img_src = images %&gt;%
+           # Since each page has multiple images,
+           # we need nested map statements... eww
+           map(.f = ~map_chr(., xml_attr, "src")))
+
+cat_breeds$img_src[[1]]
+```
+
+```
+## [1] "/uploads/cat-pictures/american-shorthair-2.jpg"  
+## [2] "/uploads/cat-pictures/american-shorthair-2-2.jpg"
+## [3] "/uploads/cat-pictures/american-shorthair-2-3.jpg"
+```
+
+---
+## Breed Info
+
+
+```r
+cat_breeds &lt;- cat_breeds %&gt;%
+  mutate(breed_info = map(page, html_element, css = ".table-01"))
+
+# Check to make sure each page has a table
+# View(cat_breeds)
+
+cat_breeds_info &lt;- cat_breeds %&gt;%
+  filter(map_int(breed_info, length) &gt; 0) %&gt;%
+  mutate(breed_info = map(breed_info, html_table))
+
+cat_breeds_info$breed_info[[1]]
+```
+
+```
+## # A tibble: 12 × 2
+##    `Breed Information` `Breed Information`                  
+##    &lt;chr&gt;               &lt;chr&gt;                                
+##  1 Popularity          "2018: #6\r\n2017: #6"               
+##  2 Name                "American Shorthair"                 
+##  3 Other names         "Domestic Shorthair"                 
+##  4 Origin              "United States"                      
+##  5 Size                "Medium to Large"                    
+##  6 Coat                "Short Hair\r\nDense\r\nHard\r\nLust…
+##  7 Lap Cat             "Yes"                                
+##  8 Life span           "15-17 years"                        
+##  9 Temperament         "Active\r\nCurious\r\nEasy Going\r\n…
+## 10 Weight              "Males: 11 to 15 pounds\r\nFemale: 8…
+## 11 Colors              "Black\r\nBlue\r\nBrown\r\nSilver\r\…
+## 12 Kitten Prices       "Average $600 - $1200 USD\r\nHow Muc…
+```
+
+---
+class: inverse
+## Your Turn - Breed Characteristics
+
+See if you can read in the information from the Breed characteristics table!
+
+---
+class: inverse
+## Your Turn - Breed Characteristics Solution
+
+```r
+cat_breeds_info &lt;- cat_breeds %&gt;% 
+  mutate(characteristics = map(page, html_element, css = ".table-02")) %&gt;%
+  filter(map_int(characteristics, length) &gt; 0) %&gt;%
+  mutate(characteristics = map(characteristics, html_table))
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
