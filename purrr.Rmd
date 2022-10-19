@@ -1,7 +1,7 @@
 ---
 title: "Purrr"
 subtitle: "The power of nested lists"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+# date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   xaringan::moon_reader:
     css: ["default", "template/unl.css"]
@@ -9,7 +9,7 @@ output:
     includes:
       in_header: template/header.html
     nature:
-      ratio: '16:9'
+      # ratio: '16:9'
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false

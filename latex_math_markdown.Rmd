@@ -1,7 +1,7 @@
 ---
 title: "LaTeX and Markdown"
 subtitle: "Documents with Markup"
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+# date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   xaringan::moon_reader:
     css: ["default", "template/unl.css"]

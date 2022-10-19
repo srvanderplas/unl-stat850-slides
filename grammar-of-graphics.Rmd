@@ -1,7 +1,7 @@
 ---
 title: "The Grammar of Graphics"
 subtitle: "An Introduction to `ggplot2`"
-date: "`r format(Sys.time(), '%B %d, %Y')`<br/><img src='https://github.com/allisonhorst/palmerpenguins/raw/master/man/figures/lter_penguins.png' width='50%'/>"
+date: "<img src='https://github.com/allisonhorst/palmerpenguins/raw/main/man/figures/lter_penguins.png' width='50%'/>"
 output:
   xaringan::moon_reader:
     css: ["default", "template/unl.css"]
