@@ -1,0 +1,174 @@
+---
+title: "Purrr"
+subtitle: "The power of nested lists"
+format: revealjs
+---
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  echo = T,
+  fig.path = "deps/purrr/",
+  fig.width = 6, fig.height = 4, 
+  out.width = "75%", 
+  message = F, warning = F, dpi = 300)
+```
+
+
+## Contents
+
+::: columns
+
+::: {.column width="55%"}
+
+- Lists and Vectors (Review)
+
+- Introduction to `map`
+
+- List columns
+
+- Ways to use `map`
+
+- Beyond `map`
+
+
+![](https://purrr.tidyverse.org/logo.png){fig-alt="Purrr package hex sticker"}
+:::
+
+::: {.column width="45%"}
+
+![](https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif){fig-alt="A cat hissing at a computer"}
+```{r, echo = T}
+## Set up - short version
+library(tidyverse)
+```
+:::
+:::
+
+## Lists and Vectors {#review}
+
+A **vector** is a 1-dimensional data structure that contains several things that are all the same type
+
+```{r}
+logical_vec <- c(T, T, F, F)
+numeric_vec <- c(3, 1, 4, 5)
+character_vec <- c("cats", "rule", "dogs", "drool") 
+# not really! but it doesn't make sense if you switch it...
+```
+
+We index vectors using single brackets
+
+```{r}
+character_vec[c(1, 3)]
+character_vec[logical_vec]
+```
+
+
+## Lists and Vectors
+
+::: columns
+
+::: {.column width="50%"}
+A **list** is a 1-dimensional data structure that contains ... anything.
+
+```{r}
+my_list <- list(
+  first = logical_vec,
+  second = list(
+    c("Another", "list"), 
+    c("With", "2", "vectors")),
+  # even model results
+  third = lm(numeric_vec ~ 1), 
+  # And empty entries!
+  fourth = NULL, 
+  # and unnamed things
+  "Unnamed stuff" 
+)
+```
+:::
+
+::: {.column width="40%"}
+
+```{r}
+my_list
+```
+:::
+
+:::
+
+## Is this a list or a vector?
+
+![](https://media.giphy.com/media/UotLuplZSzKRa/giphy.gif){fig-alt="5 cats in a hanging closet shelf, arranged vertically. The cats are pawing each other and the shelf is swaying precariously."
+fig-align="center"}
+
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+```{r}
+# By name
+my_list$second
+```
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+```{r}
+# By position, using single brackets
+my_list[1] # first thing in the list
+```
+
+(this returns a list)
+
+## Lists and Vectors
+
+Lists can be indexed in 3 different ways:
+
+::: columns
+
+::: {.column .small width="33%"}
+
+```{r}
+# By position, 
+# using []
+#
+my_list[1] 
+```
+:::
+
+::: {.column .small width="33%"}
+
+```{r}
+# By $name
+#
+#
+my_list$second
+```
+:::
+
+::: {.column .small width="33%"}
+```{r}
+# By position
+# or name, 
+# using [[]]
+my_list[[3]]
+```
+:::
+
+:::
+
+
+## Try it out {background-color="#0080FF"}
+
+```{r}
+download.file("http://bit.ly/cat-breeds-data",
+              "cat_breeds.Rdata", 
+              mode = "wb") # for the windows users
+load("cat_breeds.Rdata")
+```
+
+Create a vector of the first, fifth, and 26th cat breeds in the list
+
+Stretch goal: Create a vector containing the rating for each cat breed above's affection with its family
+
