@@ -1,14 +1,19 @@
 ---
 title: "Purrr"
 subtitle: "The power of nested lists"
-format: revealjs
+format: 
+  revealjs:
+    scrollable: false
+    code-fold: false
+    theme: [default, libs/styles.css, libs/fonts.css]
 ---
 
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, purl = F}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(
   echo = T,
+  cache = T,
   fig.path = "deps/purrr/",
   fig.width = 6, fig.height = 4, 
   out.width = "75%", 
@@ -22,15 +27,15 @@ knitr::opts_chunk$set(
 
 ::: {.column width="55%"}
 
-- Lists and Vectors (Review)
+- [Lists and Vectors (Review)](#review)
 
-- Introduction to `map`
+- [Introduction to `map`](#map-intro)
 
-- List columns
+- [List columns](#list-cols)
 
-- Ways to use `map`
+- [Ways to use `map`](#uses)
 
-- Beyond `map`
+- [Beyond `map`](#otherfns)
 
 
 ![](https://purrr.tidyverse.org/logo.png){fig-alt="Purrr package hex sticker"}
@@ -65,61 +70,36 @@ character_vec[logical_vec]
 ```
 
 
-## Lists and Vectors
+## Lists and Vectors {.r-stretch }
 
-::: columns
-
-::: {.column width="50%"}
-A **list** is a 1-dimensional data structure that contains ... anything.
+A **list** is a 1D data structure that contains ... [anything.]{.emph .cerulean}
 
 ```{r}
+#| output-location: column-fragment
 my_list <- list(
   first = logical_vec,
   second = list(
     c("Another", "list"), 
     c("With", "2", "vectors")),
+  
   # even model results
   third = lm(numeric_vec ~ 1), 
+  
   # And empty entries!
   fourth = NULL, 
+  
   # and unnamed things
   "Unnamed stuff" 
 )
-```
-:::
 
-::: {.column width="40%"}
-
-```{r}
 my_list
 ```
-:::
 
-:::
 
 ## Is this a list or a vector?
 
 ![](https://media.giphy.com/media/UotLuplZSzKRa/giphy.gif){fig-alt="5 cats in a hanging closet shelf, arranged vertically. The cats are pawing each other and the shelf is swaying precariously."
 fig-align="center"}
-
-## Lists and Vectors
-
-Lists can be indexed in 3 different ways:
-
-```{r}
-# By name
-my_list$second
-```
-## Lists and Vectors
-
-Lists can be indexed in 3 different ways:
-
-```{r}
-# By position, using single brackets
-my_list[1] # first thing in the list
-```
-
-(this returns a list)
 
 ## Lists and Vectors
 
@@ -133,7 +113,7 @@ Lists can be indexed in 3 different ways:
 # By position, 
 # using []
 #
-my_list[1] 
+my_list[2] 
 ```
 :::
 
@@ -152,12 +132,23 @@ my_list$second
 # By position
 # or name, 
 # using [[]]
-my_list[[3]]
+my_list[[2]]
 ```
 :::
 
 :::
 
+::: columns
+
+::: {.column .shadered width="33%"}
+Returns a list with the element inside
+:::
+
+::: {.column .shadenavy width="67%"}
+Returns the contents<br/> of the element
+:::
+
+:::
 
 ## Try it out {background-color="#0080FF"}
 
@@ -165,10 +156,437 @@ my_list[[3]]
 download.file("http://bit.ly/cat-breeds-data",
               "cat_breeds.Rdata", 
               mode = "wb") # for the windows users
-load("cat_breeds.Rdata")
+load("deps/purrr/cat_breeds.Rdata")
 ```
 
 Create a vector of the first, fifth, and 26th cat breeds in the list
 
 Stretch goal: Create a vector containing the rating for each cat breed above's affection with its family
 
+## Try it out Solution {background-color="#0080FF"}
+
+Create a vector of the first, fifth, and 26th cat breeds in the list
+
+```{r, purl = F}
+c(cats[[1]]$breed, cats[[5]]$breed, cats[[26]]$breed)
+```
+
+Create a vector containing the rating for each cat breed above's affection with its family
+
+```{r, purl = F}
+c(cats[[1]]$characteristics[['Affectionate with Family']], 
+  cats[[5]]$characteristics[['Affectionate with Family']], 
+  cats[[26]]$characteristics[['Affectionate with Family']])
+```
+
+
+## Cat break!
+
+![](https://i.imgur.com/hzdSzJD.mp4){fig-alt="A video of a cat high-fiving a human"}
+
+
+## Setup {#map-intro}
+
+```{r scrape-dogs-data, eval = F, include = F, purl = F}
+# Get key from https://api-ninjas.com/profile
+# Save to api-key.txt
+api_key <- readLines("api-key.txt")
+library(httr)
+header <- c("X-Api-Key" = api_key)
+
+urls <- paste0("https://api.api-ninjas.com/v1/dogs?min_weight=1&offset=", (0:15) * 20)
+
+request <- purrr::map(urls, GET, config = add_headers(header))
+dog_list <- purrr::map(request, content) |>
+  unlist(recursive = F)
+
+dogs <- dog_list
+save(dog_list, file = "dog_breeds_list.Rdata")
+```
+
+```{r format-dogs-data, include = F, eval = F, purl = F}
+library(tidyr)
+library(dplyr)
+library(stringr)
+load("dog_breeds_list.Rdata")
+dogs <- 
+  map_dfr(dog_list, as_tibble) %>%
+  dplyr::select(name, image_link, everything()) %>%
+  nest(life_expectancy = c(matches("life_expectancy")),
+       height = c(matches("height")),
+       weight = c(matches("weight"))) %>%
+  mutate(height = purrr::map(height, ~set_names(., str_remove(names(.), "_height")) %>% 
+                               pivot_longer(cols = everything()) %>% 
+                               separate(name, into = c("dim", "sex")) %>% 
+                               pivot_wider(names_from = "dim", values_from = "value") %>%
+                               group_by(sex) %>%
+                               nest(range = c(max, min)) %>%
+                               ungroup() %>%
+                               mutate(range = map(range, as.list)) %>%
+                               as.list()),
+         weight = purrr::map(weight, ~set_names(., str_remove(names(.), "_weight")) %>% 
+                               pivot_longer(cols = everything()) %>% 
+                               separate(name, into = c("dim", "sex")) %>% 
+                               pivot_wider(names_from = "dim", values_from = "value")  %>%
+                               group_by(sex) %>%
+                               nest(range = c(max, min)) %>%
+                               ungroup() %>%
+                               mutate(range = map(range, as.list)) %>%
+                               as.list()),
+         life_expectancy = purrr::map(life_expectancy, ~set_names(., str_remove(names(.), "_life_expectancy")) %>%
+                               as.list())) %>%
+  group_by(name, image_link) %>%
+  nest(characteristics = 3:14) %>%
+  mutate(characteristics = purrr::map(characteristics, as.list)) %>%
+  as.list() %>%
+  transpose()
+save(dogs, file = "dog_breeds.Rdata")
+```
+
+
+```{r load-pkgs, eval = F, purl = F}
+library(purrr)
+download.file("http://bit.ly/dog-breed-data",
+              "dog_breeds.Rdata", 
+              mode = "wb") # for the windows users
+load("dog_breeds.Rdata")
+```
+
+```{r load-pkgs, eval = T, include = F, cache = F}
+```
+
+```{r}
+length(dogs)
+names(dogs[[1]])
+```
+
+
+
+## What's in the list?
+
+```{r}
+dogs[[1]]
+```
+
+
+## Introduction to `map`
+
+`map` iterates through each item in the list and applies a function.
+
+![](https://i.imgur.com/lzXopUT.gif)
+
+
+## Introduction to `map`
+
+If you don't supply a function, `map` will default to the index function and pull items out by name or location.
+
+```{r}
+map(dogs[1:10], "name")
+```
+
+
+## Introduction to `map`
+
+`map_xxx` variants allow you to specify the type of output you want back.
+
+```{r}
+map_chr(dogs[1:10], "name")
+```
+
+and will return an error if the output is the wrong type:
+
+```{r, error = T}
+map_int(dogs[1:10], "name")
+```
+
+
+## Introduction to `map`
+
+`map` and `map_xxx` functions are pipe friendly:
+
+```{r}
+dogs[1:10] %>%
+  map_chr("name") %>% # get names out and convert to vector
+  tibble(breed = .) %>% # Create a table
+  mutate(length = map_int(breed, nchar)) # get name length in new col
+```
+
+[`mutate` + `map_xxx` are **very** useful for data cleaning]{.emph .red .center}
+
+
+## Introduction to `map`
+
+
+![](https://i.imgur.com/0Ncvq8T.mp4){fig-alt="Video of a chihuahua hiding in a freezer basket behind a container to get away from 4th of July fireworks"}
+
+
+## Try it out {background-color="#0080FF"}
+
+Pull out a character vector of the image URLs for each cat breed
+```{r tryitout-map-chr-solution, echo = F}
+cat_urls <- map_chr(cats, 2)
+```
+
+As a bonus, if you have the `magick` package installed, run this code on your result:
+```{r animate-cats, eval = F, purl = F}
+library(magick)
+ims <- map(cat_urls[1:10], image_read) %>% image_join()
+image_animate(ims, fps = 2)
+```
+
+
+
+## Try it out Solution {background-color="#0080FF"}
+
+Pull out a character vector of the image URLs for each cat breed
+
+```{r tryitout-map-chr-solution, echo = T, eval = F, purl = F}
+```
+
+```{r animate-cats, echo = T, fig.align = "center"}
+```
+
+## Introduction to `map`
+
+What if we want to pull out multiple values?
+
+`[` is a function!    
+[(Or use `magrittr::extract` if it makes you uncomfortable)]{.small}
+
+::: columns
+
+::: {.column width="70%"}
+```{r}
+tmp <- map(dogs, `[`, c("name", "image_link"))
+tmp[[221]]
+```
+:::
+
+::: {.column width="30%"}
+```{r, echo = F, purl = F}
+knitr::include_graphics(tmp[[221]]$image_link)
+```
+:::
+
+:::
+
+## Introduction to `map`
+
+We can even get a data frame, as long as each entry has only one line
+
+```{r}
+# There are several extract functions in different pkgs
+# use magrittr::extract to get the one we need
+dog_df <- map_df(dogs, magrittr::extract, 
+                 c("name", "image_link"))
+```
+## Try it out!  {background-color="#0080FF"}
+
+Create a data frame of cat information using the single-length items in the `cats` object.
+
+
+## Try it out Solution {background-color="#0080FF"}
+
+Create a data frame of cat information using the single-length items in the `cats` object.
+
+```{r tryitout-mapdf-extract-solution, purl = F}
+cat_df <- map_df(cats, magrittr::extract, 
+                 c("breed", "image", "short_desc"))
+cat_df
+```
+
+
+
+## Creating (and using) List columns {#list-cols}
+
+**List columns** are columns in a data frame that contain a list instead of a simple data type.
+
+```{r, include = F, purl = F}
+load("dog_breeds_list.Rdata")
+```
+```{r, include = F, purl = F}
+tmp <- map_dfr(dog_list, as_tibble) %>%
+  dplyr::select(name, image_link, matches("^[^(max|min)]")) %>%
+  group_by(name, image_link) %>%
+  nest(characteristics = 3:14) %>%
+  ungroup()
+```
+
+```{r, echo = -1, purl = F}
+select(tmp, name, characteristics)
+```
+
+
+## Creating (and using) List columns
+
+```{r}
+# What about the characteristics?
+dogs[[1]]$characteristics 
+```
+
+## Creating List columns
+
+We could write a function to format the list columns the way we want them to be...
+
+like, maybe in a nice data frame?
+```{r}
+fix_characteristics <- function(x) 
+  tibble(characteristic = names(x), 
+         rating = as.numeric(x))
+
+fix_characteristics(dogs[[1]]$characteristics)
+```
+
+
+```{r, eval = F, include = F, purl = F}
+as.data.frame(dogs[[1]]$characteristics) # Gives the column-version
+
+map_dfr(dogs, "characteristics") # binds everything together in a data frame by default
+```
+
+## Creating List columns
+
+Then, we can mutate a list-column using map to apply our function to every entry!
+
+```{r}
+dog_df$characteristics <- map(dogs, "characteristics") %>% 
+           map(fix_characteristics)
+
+select(dog_df, name, characteristics)
+```
+
+
+
+## Try it out {background-color="#0080FF"}
+
+Create a list column that contains a data frame of characteristics for each cat breed
+
+## Try it out Solution {background-color="#0080FF"}
+
+Pull out a character vector of the image URLs for each cat breed
+
+```{r, echo = T, fig.align = "center", purl = F}
+cat_df$characteristics <- map(cats, "characteristics") %>% 
+  map(fix_characteristics)
+
+select(cat_df, breed, characteristics)
+```
+
+
+## Working with List-columns
+
+We can [unnest]{.cerulean .emph} this column:    
+each row in the characteristics df gets a row in the main df
+
+(# characteristics rows for each breed)
+
+```{r}
+select(dog_df, name, characteristics) %>%
+  unnest(characteristics)
+```
+
+
+## Working with List-columns
+
+```{r, fig.width = 8, fig.height = 4, fig.align = "center"}
+select(dog_df, name, characteristics) %>% unnest(characteristics) %>%
+  ggplot(aes(x = rating)) +  geom_bar() + 
+  facet_wrap(~characteristic, nrow = 2)
+```
+
+## Try it out {background-color="#0080FF"}
+
+Unnest the characteristics for each cat breed and create a (different) appropriate plot of the distribution of each characteristic.
+
+## Try it out Solutions {background-color="#0080FF"}
+
+Unnest the characteristics for each cat breed and create a (different) appropriate plot of the distribution of each characteristic.
+
+```{r tryitout-cat-unnest, echo = T, eval = F, purl = F}
+select(cat_df, breed, characteristics) %>%
+  unnest(characteristics) %>%
+  ggplot(aes(x = rating)) + 
+  geom_area(aes(y = after_stat(count), 
+                fill = characteristic), stat = "count") + 
+  scale_fill_discrete(guide = 'none') + 
+  facet_wrap(~characteristic, nrow = 2)
+```
+
+
+## Try it out Solution {background-color="#0080FF"}
+
+Unnest the characteristics for each cat breed and create a (different) appropriate plot of the distribution of each characteristic.
+
+```{r tryitout-cat-unnest, echo = F, eval = T, fig.align = "center", fig.width = 10, fig.height = 4, purl = F}
+```
+
+
+
+## Try it out (#2) {background-color="#0080FF"}
+
+1. Write a function that will convert the cat statistics into a data frame.    
+Include columns for min_life_span, max_life_span, min_weight, max_weight, length, and origin.
+
+2. Test your function on one or two cat breeds
+
+3. Use mutate + map to create a list-column with the statistics. 
+
+4. Is there a relationship between breed size and life span?
+
+
+## Try it out (#2) Solution {background-color="#0080FF"}
+
+```{r, purl = F}
+cat_stats <- function(x) {
+  tibble(
+    min_life_span = str_extract(x[[1]], "^\\d{1,}") %>% parse_number,
+    max_life_span = str_extract(x[[1]], "to \\d{1,}") %>% parse_number,
+    min_weight = str_extract(x[[3]], "^\\d{1,}") %>% parse_number,
+    max_weight = str_extract(x[[3]], "to \\d{1,}") %>% parse_number,
+    length = x[[2]],
+    origin = x[[4]]
+  )
+}
+
+cat_stats(cats[[1]]$stats)
+```
+
+## Try it out (#2) Solution {background-color="#0080FF"}
+
+
+```{r, fig.width = 4, fig.height = 2, purl = F}
+cat_df <- cat_df %>%
+  mutate(stats = map(cats, "stats") %>% map(cat_stats))
+
+select(cat_df, breed, stats) %>%
+unnest(stats) %>%
+  ggplot(aes(x = max_weight, y = max_life_span)) + 
+  geom_jitter(amount = .125) + 
+  geom_smooth(method = "lm", se = F)
+```
+
+## Ways to use purrr {#uses}
+
+- Read in multiple files, fit a model to each dataset
+
+- Create lists of predictor variables, fit a model with those variables to the same dataset and compare
+
+- Keep your data stored in a single data frame, only accessing the pieces you need at any given time
+
+- Run simulations and store the simulation results in a column
+
+- Store the data, data cleaning steps, and model results in a single data frame
+
+
+## Beyond `map` {#otherfns}
+
+- `map2` takes two inputs, `.x` and `.y`, and applies `function(.x, .y)` to each combination
+
+- `pmap` takes a list of inputs and applies a function to each combination
+
+- `walk` takes inputs and applies a function to them but doesn't store results    
+(useful for e.g. printing out plots)
+
+
+- lots of other helper functions in `purrr`    
+`pluck`, `chuck`, `transpose`, ...
