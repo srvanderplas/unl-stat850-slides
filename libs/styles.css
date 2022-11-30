@@ -150,7 +150,7 @@ $theme-colors: (
   text-align: center !important;
 }
 
-/*
+
 .reveal section .huge {font-size: 150%}
 .reveal section .large {font-size: 130%}
 .reveal section .largish{font-size:110%;}
@@ -159,7 +159,7 @@ $theme-colors: (
 .reveal section .smaller {font-size: 75%}
 .reveal section .small {font-size: 70%}
 .reveal section .tiny {font-size: 50%}
-*/
+
 
 .reveal section table {
   margin-left: auto!important;
