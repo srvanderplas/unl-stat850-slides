@@ -7,11 +7,12 @@ library(tidyverse)
 logical_vec <- c(T, T, F, F)
 numeric_vec <- c(3, 1, 4, 5)
 character_vec <- c("cats", "rule", "dogs", "drool") 
-# not really! but it doesn't make sense if you switch it...
 
 
 ## ------------------------------------------------------------------------------------------
+# By location
 character_vec[c(1, 3)]
+# With logical vectors
 character_vec[logical_vec]
 
 
@@ -57,7 +58,7 @@ my_list[[2]]
 
 
 ## ------------------------------------------------------------------------------------------
-download.file("http://bit.ly/cat-breeds-data",
+download.file("https://bit.ly/cat-breeds-purrr",
               "cat_breeds.Rdata", 
               mode = "wb") # for the windows users
 load("cat_breeds.Rdata")
@@ -75,7 +76,7 @@ load("cat_breeds.Rdata")
 
 ## ----load-pkgs, eval = T, include = F, cache = F-------------------------------------------
 library(purrr)
-download.file("http://bit.ly/dog-breed-data",
+download.file("https://bit.ly/dog-breeds-purrr",
               "dog_breeds.Rdata", 
               mode = "wb") # for the windows users
 load("dog_breeds.Rdata")

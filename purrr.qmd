@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 
 ::: columns
 
-::: {.column width="55%"}
+::: {.column width="69%"}
 
 - [Lists and Vectors (Review)](#review)
 
@@ -37,19 +37,23 @@ knitr::opts_chunk$set(
 
 - [Beyond `map`](#otherfns)
 
-
-![](https://purrr.tidyverse.org/logo.png){fig-alt="Purrr package hex sticker"}
-:::
-
-::: {.column width="45%"}
-
-![](https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif){fig-alt="A cat hissing at a computer"}
 ```{r, echo = T}
 ## Set up - short version
 library(tidyverse)
 ```
 :::
+
+::: {.column width="30%"}
+<!-- ![](https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif){fig-alt="A cat hissing at a computer"} -->
+![](https://github.com/rstudio/hex-stickers/raw/main/PNG/purrr.png){fig-alt="Purrr package hex sticker"}
+
 :::
+:::
+
+
+
+Follow along: https://bit.ly/850-purrr-slides
+
 
 ## Lists and Vectors {#review}
 
@@ -59,13 +63,14 @@ A **vector** is a 1-dimensional data structure that contains several things that
 logical_vec <- c(T, T, F, F)
 numeric_vec <- c(3, 1, 4, 5)
 character_vec <- c("cats", "rule", "dogs", "drool") 
-# not really! but it doesn't make sense if you switch it...
 ```
 
 We index vectors using single brackets
 
 ```{r}
+# By location
 character_vec[c(1, 3)]
+# With logical vectors
 character_vec[logical_vec]
 ```
 
@@ -153,10 +158,10 @@ Returns the contents<br/> of the element
 ## Try it out {background-color="#0080FF"}
 
 ```{r}
-download.file("http://bit.ly/cat-breeds-data",
+download.file("https://bit.ly/cat-breeds-purrr",
               "cat_breeds.Rdata", 
               mode = "wb") # for the windows users
-load("deps/purrr/cat_breeds.Rdata")
+load("cat_breeds.Rdata")
 ```
 
 Create a vector of the first, fifth, and 26th cat breeds in the list
@@ -201,14 +206,14 @@ dog_list <- purrr::map(request, content) |>
   unlist(recursive = F)
 
 dogs <- dog_list
-save(dog_list, file = "dog_breeds_list.Rdata")
+save(dog_list, file = "purrr/deps/dog_breeds_list.Rdata")
 ```
 
 ```{r format-dogs-data, include = F, eval = F, purl = F}
 library(tidyr)
 library(dplyr)
 library(stringr)
-load("dog_breeds_list.Rdata")
+load("purrr/deps/dog_breeds_list.Rdata")
 dogs <- 
   map_dfr(dog_list, as_tibble) %>%
   dplyr::select(name, image_link, everything()) %>%
@@ -240,13 +245,13 @@ dogs <-
   mutate(characteristics = purrr::map(characteristics, as.list)) %>%
   as.list() %>%
   transpose()
-save(dogs, file = "dog_breeds.Rdata")
+save(dogs, file = "purrr/deps/dog_breeds.Rdata")
 ```
 
 
 ```{r load-pkgs, eval = F, purl = F}
 library(purrr)
-download.file("http://bit.ly/dog-breed-data",
+download.file("https://bit.ly/dog-breeds-purrr",
               "dog_breeds.Rdata", 
               mode = "wb") # for the windows users
 load("dog_breeds.Rdata")
@@ -402,7 +407,7 @@ cat_df
 **List columns** are columns in a data frame that contain a list instead of a simple data type.
 
 ```{r, include = F, purl = F}
-load("dog_breeds_list.Rdata")
+load("deps/purrr/dog_breeds_list.Rdata")
 ```
 ```{r, include = F, purl = F}
 tmp <- map_dfr(dog_list, as_tibble) %>%
@@ -590,3 +595,6 @@ unnest(stats) %>%
 
 - lots of other helper functions in `purrr`    
 `pluck`, `chuck`, `transpose`, ...
+
+```{r clean-up, purl = F, eval = F}
+unlink("cat-breeds.Rdata", "dog-breeds.Rdata")

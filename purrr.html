@@ -397,7 +397,7 @@
 <section id="contents" class="slide level2">
 <h2>Contents</h2>
 <div class="columns">
-<div class="column" style="width:55%;">
+<div class="column" style="width:69%;">
 <ul>
 <li><p><a href="#/review">Lists and Vectors (Review)</a></p></li>
 <li><p><a href="#/map-intro">Introduction to <code>map</code></a></p></li>
@@ -405,32 +405,34 @@
 <li><p><a href="#/uses">Ways to use <code>map</code></a></p></li>
 <li><p><a href="#/otherfns">Beyond <code>map</code></a></p></li>
 </ul>
-<p><img data-src="https://purrr.tidyverse.org/logo.png" alt="Purrr package hex sticker"></p>
-</div><div class="column" style="width:45%;">
-<p><img data-src="https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif" alt="A cat hissing at a computer"></p>
 <div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-1_d4cdc80903de6a5f35aad0115e3c2722">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="do">## Set up - short version</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</div><div class="column" style="width:30%;">
+<!-- ![](https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif){fig-alt="A cat hissing at a computer"} -->
+<p><img data-src="https://github.com/rstudio/hex-stickers/raw/main/PNG/purrr.png" alt="Purrr package hex sticker"></p>
 </div>
 </div>
+<p>Follow along: https://bit.ly/850-purrr-slides</p>
 </section>
 <section id="review" class="slide level2">
 <h2>Lists and Vectors</h2>
 <p>A <strong>vector</strong> is a 1-dimensional data structure that contains several things that are all the same type</p>
-<div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-2_f54e15891577f0efb5b142fba10ca520">
+<div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-2_95d1bc2f92c4a1bc0ea7a5ad4b6b90d3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>logical_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(T, T, F, F)</span>
 <span id="cb2-2"><a href="#cb2-2"></a>numeric_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">5</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>character_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cats"</span>, <span class="st">"rule"</span>, <span class="st">"dogs"</span>, <span class="st">"drool"</span>) </span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># not really! but it doesn't make sense if you switch it...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3"></a>character_vec <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"cats"</span>, <span class="st">"rule"</span>, <span class="st">"dogs"</span>, <span class="st">"drool"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We index vectors using single brackets</p>
-<div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-3_ff0c15129fa382c798935cdd44c55c83">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>character_vec[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-3_cc10c281d4d62dc5d63a07568cd1bb3f">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># By location</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>character_vec[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "cats" "dogs"</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>character_vec[logical_vec]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># With logical vectors</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>character_vec[logical_vec]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "cats" "rule"</code></pre>
 </div>
@@ -553,8 +555,8 @@ $second[[2]]
 </section>
 <section id="try-it-out" class="slide level2" data-background-color="#0080FF">
 <h2>Try it out</h2>
-<div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-8_ef7a7d2167b7a366dff7cffe893eec68">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">download.file</span>(<span class="st">"http://bit.ly/cat-breeds-data"</span>,</span>
+<div class="cell" data-hash="purrr_cache/revealjs/unnamed-chunk-8_7a5476a95127b3087595571165df1dbb">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">download.file</span>(<span class="st">"https://bit.ly/cat-breeds-purrr"</span>,</span>
 <span id="cb15-2"><a href="#cb15-2"></a>              <span class="st">"cat_breeds.Rdata"</span>, </span>
 <span id="cb15-3"><a href="#cb15-3"></a>              <span class="at">mode =</span> <span class="st">"wb"</span>) <span class="co"># for the windows users</span></span>
 <span id="cb15-4"><a href="#cb15-4"></a><span class="fu">load</span>(<span class="st">"cat_breeds.Rdata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -587,9 +589,9 @@ $second[[2]]
 </section>
 <section id="map-intro" class="slide level2">
 <h2>Setup</h2>
-<div class="cell" data-hash="purrr_cache/revealjs/load-pkgs_08469d2d343bbc2bfb0ca3c85582ebfa">
+<div class="cell" data-hash="purrr_cache/revealjs/load-pkgs_3c5c98dc14b63b5cd0d48f56433d8011">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">library</span>(purrr)</span>
-<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">download.file</span>(<span class="st">"http://bit.ly/dog-breed-data"</span>,</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="fu">download.file</span>(<span class="st">"https://bit.ly/dog-breeds-purrr"</span>,</span>
 <span id="cb20-3"><a href="#cb20-3"></a>              <span class="st">"dog_breeds.Rdata"</span>, </span>
 <span id="cb20-4"><a href="#cb20-4"></a>              <span class="at">mode =</span> <span class="st">"wb"</span>) <span class="co"># for the windows users</span></span>
 <span id="cb20-5"><a href="#cb20-5"></a><span class="fu">load</span>(<span class="st">"dog_breeds.Rdata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1171,6 +1173,7 @@ Include columns for min_life_span, max_life_span, min_weight, max_weight, length
 <li><p>lots of other helper functions in <code>purrr</code><br>
 <code>pluck</code>, <code>chuck</code>, <code>transpose</code>, …</p></li>
 </ul>
+<p>unlink(“cat-breeds.Rdata”, “dog-breeds.Rdata”)</p>
 <div class="footer footer-default">
 
 </div>
